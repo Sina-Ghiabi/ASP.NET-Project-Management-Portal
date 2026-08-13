@@ -1,0 +1,155 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.FinancialStatementForm.FinancialStatementFormViewModel
+
+<form id="addOrUpdateFinancialStatementForm" asp-action="AddOrUpdateFinancialStatement" asp-controller="Project" method="post" enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title" id="defaultModalLabel">@(Model.Id == null ? "Add New Statement" : "Edit Statement")</h4>
+    </div>
+    <hr />
+    @Html.HiddenFor(model => model.ProjectId)
+    @Html.HiddenFor(model => model.FileUrl)
+    @Html.HiddenFor(model => model.Id)
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="">Type</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.DropDownListFor(model => model.FinancialStatementType, Html.GetEnumSelectList(typeof(FinancialStatementType)), "--- Select ---", new { @class = "form-control", requierd = "requierd" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Currency</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.DropDownListFor(model => model.CurrencyType, Html.GetEnumSelectList(typeof(CurrencyType)), new { @class = "form-control", requierd = "requierd" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Number</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.Number, new { @class = "form-control", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Period Amount</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.PeriodicAmount, new { @class = "form-control", placeholder = "", autocomplete = "off", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Cumulative Amount</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.TotalAmount, new { @class = "form-control", placeholder = "", autocomplete = "off", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Start Date</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">End Date</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Related File</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        <input id="FinancialStatementInput" name="FinancialStatementInput" type="file" class="m-t-10" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">@(Model.Id == null ? "Save" : "Edit")</button>
+        <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Cancel</a>
+    </div>
+</form>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $(".simple-datepicker").persianDatepicker({
+            initialValue: false,
+            format: 'YYYY/MM/DD',
+            autoClose: true
+        });
+
+     $('[data-mask]').each(function () {
+        $(this).mask($(this).attr("data-mask"));
+    });
+    });
+
+    $("#addOrUpdateFinancialStatementForm").submit(function (e) {
+        e.preventDefault();
+        if ($(this).valid()) {
+            var formAction = $(this).attr("action");
+
+            var fdata = new FormData(this);
+
+            var fileInput = $('#FinancialStatementInput')[0];
+            var file = fileInput.files[0];
+            fdata.append("file", file);
+
+            $.ajax({
+                type: 'post',
+                url: formAction,
+                data: fdata,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                if (result.status === "success") {
+                    $('#addFinancialStatementModal').modal('hide');
+                    $('#addFinancialStatementForm').trigger("reset");
+                    $('#FinancialStatementGrid').data('kendoGrid').dataSource.read();
+                    $('#FinancialStatementGrid').data('kendoGrid').refresh();
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+    });
+
+
+    $('#addOrUpdateFinancialStatementForm').validate({
+        rules: {
+            'FinancialStatementType': {
+                required: true
+            },
+            'CurrencyType': {
+                required: true
+            }
+        },
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.form-group').append(error);
+        }
+    });
+</script>

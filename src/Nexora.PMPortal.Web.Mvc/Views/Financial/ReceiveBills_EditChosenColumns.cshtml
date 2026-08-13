@@ -1,0 +1,94 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ChosenColumnsViewModel
+
+@{
+    ViewBag.CurrentPageName = PageNames.PaymentRequests; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Select Columns
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("AddOrUpdateChosenColumns", "Financial", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(Model => Model.TableID, new { @id = "TableID" })
+                    <div class="modal-body">
+                        <div class="row" style="visibility:hidden">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column1, new { @class = "form-control", @id = "PaymentRequest" })
+                                <label for="PaymentRequest"> Request Amount</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column2, new { @class = "form-control", @id = "Checkbox-Paid" })
+                                <label for="Checkbox-Paid"> Allocated</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column3, new { @class = "form-control", @id = "Checkbox-PaymentRemains" })
+                                <label for="Checkbox-PaymentRemains"> Remaining</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column4, new { @class = "form-control", @id = "Checkbox-RecievementType" })
+                                <label for="Checkbox-RecievementType"> Receipt Method </label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column5, new { @class = "form-control", @id = "Checkbox-CurrencyType" })
+                                <label for="Checkbox-CurrencyType">Currency</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column6, new { @class = "form-control", @id = "Checkbox-Date" })
+                                <label for="Checkbox-Date"> Date</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Save</button>
+                            <a href="@Url.Action("ReceiveBills", "Financial")" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#TableID").val(2);
+</script>
+
+

@@ -1,0 +1,74 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.UserProjectModal.UserProjectModalViewModel
+
+<div class="row">
+    <div class="col-md-10">
+        <input type="hidden" id="userId" name="userId" value="@Model.UserId" />
+        <div class="form-group">
+            <div class="form-line">
+                @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", data_live_search="true", required = "required" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-group">
+            <a href="javascript:;" id="add_payment_transaction" class="btn btn-success m-t-5 waves-effect pull-right">Add</a>
+        </div>
+    </div>
+</div>
+
+<div class="k-rtl">
+    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.UserProjectViewModel>().Name("ProjectsGrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Id).Title("#").Filterable(false).Width(30);
+                      columns.Bound(c => c.ProjectName).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Title("Project Name");
+                      columns.Command(c => { c.Destroy().Text("Delete"); }).Width(75);
+                  })
+                  .Navigatable()
+                  .Sortable()
+                  .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model =>
+                  {
+                      model.Id(p => p.Id);
+                  })
+                  .Read(read => read.Action("UserProjectRead", "Financial", new { id = Model.UserId }))
+                  .Destroy(destroy => destroy.Action("UserProjectDestroy", "Financial"))
+                  )
+    )
+</div>
+
+<script>
+    $("#add_payment_transaction").click(function () {
+        var userid_value = $("#userId").val() * 1;
+        var projectid_value = $("#ProjectId").val() * 1;
+
+        if (projectid_value) {
+            $.ajax({
+                type: 'post',
+                url: "/Financial/AddProjectToUser",
+                data: { "userId": userid_value, "projectId": projectid_value },
+                enctype: 'multipart/form-data',
+            }).done(function (result) {
+                if (result.status === "duplicate") {
+                    alert("Duplicate record!");
+                }
+                else {
+                    if (result.status === "success") {
+                        $('#ProjectsGrid').data('kendoGrid').dataSource.read();
+                        $('#ProjectsGrid').data('kendoGrid').refresh();
+                    } else {
+                        alert(result.message);
+                    }
+                }
+
+            });
+        }
+        else {
+            alert("Selecting a project is required!");
+        }
+    });
+
+</script>

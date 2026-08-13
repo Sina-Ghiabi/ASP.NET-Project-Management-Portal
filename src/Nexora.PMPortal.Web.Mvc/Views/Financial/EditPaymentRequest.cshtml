@@ -1,0 +1,325 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.PaymentRequestViewModel
+
+@{
+    ViewBag.CurrentPageName = PageNames.PaymentRequests; // The menu item will be active for this page.
+}
+
+@{
+    var returnPage = "PaymentRequests";
+    if (Model.RefererPage != null)
+    {
+        returnPage = Model.RefererPage;
+    }
+}
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Edit Payment Request
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("EditPaymentRequest", "Financial", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.LastGridPage)
+                    @Html.HiddenFor(model => model.RefererPage)
+
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Project</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.ProjectId, new SelectList(ViewBag.ProjectId, "Id", "Title"), new { @class = "form-control", data_live_search = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Schedule Row</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ScheduleRow, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <label for="">Payable To</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PayTo, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="javascript:;" class="btn btn-info m-t-30" data-toggle="modal" data-target="#ContractorsModal">Select Contractor</a>
+                            <a href="javascript:;" id="cancel-contractor" class="btn btn-danger m-t-30" style="display:none;">X</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Fourth Level Code</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.FourthLevelCode, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="">Payment Request ID</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PaymentRequestCode, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="javascript:;" class="btn btn-info m-t-30" data-toggle="modal" data-target="#KatibeModal">Receive from Katibeh</a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Activity Title</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PaymentDescription, new { @class = "form-control", placeholder = "" ,required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Category</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.PaymentRequestType, Html.GetEnumSelectList(typeof(PaymentRequestType)), "--- Select ---", new { @class = "form-control", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <label for="">Payable To</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            @Html.TextBoxFor(model => model.PayTo, new { @class = "form-control", placeholder = "" })
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label for="">Requested Amount</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Credit Balance</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.CreditBalance, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="">Currency</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.CurrencyType, Html.GetEnumSelectList(typeof(CurrencyType)), null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label for="">Payment Method</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.PaymentType, Html.GetEnumSelectList(typeof(PaymentType)), new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Cheque Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ChequeDueDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <label for="">Description</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = "" })
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <a href="@Url.Action(returnPage, "Financial",new {lastPage= Model.LastGridPage})" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ContractorsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Select Contractor</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <div class="k-rtl">
+                                @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ContractorViewModel>()
+                                              .Name("Grid")
+                                              .Columns(columns =>
+                                              {
+                                                 columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                  columns.Bound(c => c.Name).Title("Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Bound(c => c.Code).Title("Code").Width(150).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Command(c => c.Custom("Select").Click("onSelect")).Width(75);
+                                              })
+                                              .Pageable()
+                                              .Navigatable()
+                                              .Sortable()
+                                              .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                              .Scrollable()
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .PageSize(10)
+                                                  .ServerOperation(false)
+                                                  .Model(model =>
+                                                  {
+                                                      model.Id(p => p.Id);
+                                                  })
+                                                  .Read(read => read.Action("ContractorRead", "Financial"))
+                                              )
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function onSelect(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //$("#id_field").val(dataItem.id);
+        $("#PayTo").val(dataItem.Name);
+        //$("#PayTo").attr("disabled", true);
+        $("#FourthLevelCode").val(dataItem.Code);
+        //$("#FourthLevelCode").attr("disabled", true);
+        //$("#cancel-contractor").show();
+        $('#ContractorsModal').modal('hide');
+    }
+
+    $("#cancel-contractor").click(function () {
+        //$("#PayTo").attr("disabled", false);
+        //$("#FourthLevelCode").attr("disabled", false);
+        $("#PayTo").val("");
+        $("#FourthLevelCode").val("");
+        $("#cancel-contractor").hide();
+    });
+
+    $("#PaymentType").change(function () {
+        var value = $(this).val() * 1;
+        if (value == 2) {
+            $("#check").show();
+        }
+        else {
+            $("#check").hide();
+        }
+    });
+</script>
+
+<div class="modal modal-light fade" id="KatibeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Select Record from Katibeh System</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <div class="k-rtl">
+
+                                @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.KatibeDarkhastViewModel>()
+                                              .Name("Grid2")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                  columns.Bound(c => c.DarVajh).Title("Payable To").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Bound(c => c.Kharid).Title("Purchase").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Bound(c => c.Onvan).Title("Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  //columns.Bound(c => c.CodeOnvan).Title("Code Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  //columns.Bound(c => c.ShenaseOnvan).Title("ID Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Bound(c => c.TaaedMali).Title("Financial Approval").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                  columns.Bound(c => c.Shenasname).Title("Letter ID").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+
+                                                  columns.Command(c => c.Custom("Select").Click("onKatibeSelect")).Width(75);
+                                              })
+                                              .Pageable()
+                                              .Navigatable()
+                                              .Sortable()
+                                              .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                              .Scrollable()
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .PageSize(10)
+                                                  .ServerOperation(true)
+                                                  .Model(model =>
+                                                  {
+                                                      model.Id(p => p.Id);
+                                                  })
+                                                  .Read(read => read.Action("Katibe_DarkhastRead", "Financial"))
+                                              )
+                                )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function onKatibeSelect(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //$("#id_field").val(dataItem.id);
+        $("#PaymentRequestCode").val(dataItem.Shenasname);
+        //$("#PayTo").attr("disabled", true);
+        $("#PaymentDescription").val(dataItem.Kharid);
+        //$("#FourthLevelCode").attr("disabled", true);
+        $("#Amount").val(dataItem.TaaedMali);
+
+        $('#KatibeModal').modal('hide');
+
+    }
+</script>

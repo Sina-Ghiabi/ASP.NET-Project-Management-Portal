@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.CurrentPageName = PageNames.Users;
+}
+
+@using Nexora.PMPortal.Web.Startup
+
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Users
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Create","Users")" class="btn btn-primary btn-create  pull-right">Add New User</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.Models.Users.UserViewModel>()
+                                                                  .Name("Grid")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                      columns.Bound(c => c.Id).Title("#").Width(40).Filterable(false);
+                                                                      columns.Bound(c => c.FullName).Title("Full Name").Width(160).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                                      columns.Bound(c => c.UserName).Title("Username").Width(130).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                                      columns.Bound(c => c.EmailAddress).Title("Email").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                                      columns.Bound(c => c.RoleNames).Title("Roles").Width(120);
+                                                                      //columns.Bound(c => c.CreationTime).Title("Creation Date").Width(100).Filterable(false);
+                                                                      columns.Command(c => c.Custom("Projects").Click("onProjectUsers")).Width(90);
+                                                                      columns.Command(c => c.Custom("Edit").Click("onEdit")).Width(75);
+                                                                      columns.Command(c => c.Custom("Reset Password").Click("onResetPassword")).Width(115);
+                                                                      columns.Command(c => { c.Destroy().Text("Delete"); }).Width(80);
+                                                                  })
+                                                                  .Pageable()
+                                                                  .Navigatable()
+                                                                  .Sortable()
+                                                                  .Filterable(ftb => ftb.Mode(GridFilterMode.Row))                                                                  .Scrollable()
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .PageSize(7)
+                                                                      .ServerOperation(false)
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.Id);
+                                                                      })
+                                                                      .Read(read => read.Action("UserRead", "Users"))
+                                                                      .Destroy(destroy => destroy.Action("UserDestroy", "Users"))
+                                                                  )
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function onEdit(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/Users/Edit/" + dataItem.id;
+    }
+
+    function onResetPassword(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/Users/ResetPassword/" + dataItem.id;
+    }
+
+    function onProjectUsers(e) {
+        e.preventDefault();
+        _telerik();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            type: "GET",
+            url: "/Users/ProjectListModal?userId=" + dataItem.id,
+            success: function (response) {
+                var dvItems = $("#UserProjectsModal");
+                dvItems.empty();
+                dvItems.html(response);
+                $('#addProjectModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+
+    }
+
+</script>
+
+
+<div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Projects</h4>
+            </div>
+            <hr />
+
+            <div class="modal-body">
+               
+                <div id="UserProjectsModal">
+                    
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Close</a>
+            </div>
+        </div>
+    </div>
+</div>

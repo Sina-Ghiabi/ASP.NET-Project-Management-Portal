@@ -1,0 +1,41 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.PaymentRequestViewModel
+
+@{
+    ViewBag.CurrentPageName = PageNames.PaymentRequests; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Import via Excel - Receipt
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+                @ViewBag.Error
+                <form id="" asp-action="ImportReceipt" asp-controller="Financial" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-6">
+                        <label for="">File</label>
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input id="fileExcel" name="fileExcel" type="file" class="m-t-10" />
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

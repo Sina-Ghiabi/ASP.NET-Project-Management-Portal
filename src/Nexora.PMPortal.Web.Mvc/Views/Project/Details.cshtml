@@ -1,0 +1,1119 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ProjectViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+<script src="https://cdn.jsdelivr.net/picturefill/2.3.1/picturefill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"></script>
+<script src="~/lib/lightgallery/js/lightgallery-all.min.js"></script>
+
+<link href="~/lib/lightgallery/css/lightgallery.css" rel="stylesheet" />
+
+
+<style>
+    .gallery-img-date {
+        background: #000167;
+        width: 100%;
+        display: inline-block;
+        color: #fff;
+        text-align: center;
+        padding: 6px;
+        margin-top: -5px;
+    }
+</style>
+<input type="hidden" id="ProjectId" value="@Model.Id" />
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Project Details - @Model.Title
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Index","Project")" class="btn btn-warning btn-create  pull-right">Back to Projects List</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a id="BasicInfoButton" href="#home_with_icon_title" data-toggle="tab">
+                            <i class="material-icons">home</i> Basic Info
+                        </a>
+                    </li>
+                    @if (IsGranted("PmPortal.Project.FinancialStatement"))
+                    {
+                        <li role="presentation">
+                            <a id="FinancialStatementButton" href="#profile_with_icon_title" data-toggle="tab">
+                                <i class="material-icons">assignment</i> Financial Statements
+                            </a>
+                        </li>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectReport"))
+                    {
+                        <li role="presentation">
+                            <a id="ReportsButton" href="#messages_with_icon_title" data-toggle="tab">
+                                <i class="material-icons">assignment_turned_in</i> Reports
+                            </a>
+                        </li>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectPlan"))
+                    {
+                        <li role="presentation">
+                            <a id="PlansButton" href="#ProjectPlanSection" data-toggle="tab">
+                                <i class="material-icons">assignment_turned_in</i> Plans
+                            </a>
+                        </li>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectAsset"))
+                    {
+                        <li role="presentation">
+                            <a id="FinancialButton" href="#assets_with_icon_title" data-toggle="tab">
+                                <i class="material-icons">dns</i> Assets
+                            </a>
+                        </li>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectMedia"))
+                    {
+                        <li role="presentation">
+                            <a id="AddPictureButton" href="#settings_with_icon_title" data-toggle="tab">
+                                <i class="material-icons">photo_library</i> Images
+                            </a>
+                        </li>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectGallery"))
+                    {
+                        <li role="presentation">
+                            <a id="GalleryButton" href="#settings_with_icon_title1" data-toggle="tab">
+                                <i class="material-icons">photo_library</i> Gallery
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active p-t-10" id="home_with_icon_title">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>Title</th>
+                                <td>@Model.Title</td>
+                                <th>Project Code</th>
+                                <td>@(Model.Code ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Project Type</th>
+                                <td>@Model.ProjectType.GetDisplayName()</td>
+                                <th>Project Status</th>
+                                <td>@Model.ProjectStatus.GetDisplayName()</td>
+                            </tr>
+                            <tr>
+                                <th>Client</th>
+                                <td>@(Model.Client ?? "-")</td>
+                                <th>Planning Manager</th>
+                                <td>@(Model.PlannigManager ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Consultant</th>
+                                <td>@(Model.Consultant ?? "-")</td>
+                                <th>Project Manager</th>
+                                <td>@(Model.ProjectManager ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Partners</th>
+                                <td>@(Model.Partners ?? "-")</td>
+                                <th>Partnership Percentage</th>
+                                <td>@(Model.PartnerShares ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Initial Amount (Rial)</th>
+                                <td>@(Model.InitialContractAmount ?? "-")</td>
+                                <th>Extension Amount (Rial)</th>
+                                <td>@(Model.ExtensionContractAmount ?? "-")</td>
+                            </tr>
+                            @if (Model.AmountCurrencyType != null)
+                            {
+                                <tr>
+                                    <th>Initial Amount (@Model.AmountCurrencyType.GetDisplayName())</th>
+                                    <td>@(Model.InitialContractAmountInCurrency ?? "-")</td>
+                                    <th>Extension Amount (@Model.AmountCurrencyType.GetDisplayName())</th>
+                                    <td>@(Model.ExtensionContractAmountInCurrency ?? "-")</td>
+                                </tr>
+                            }
+                            <tr>
+                                <th>Project Location</th>
+                                <td>@(Model.ProjectSite ?? "-")</td>
+                                <th>Start Date</th>
+                                <td>@(Model.StartDate ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Temporary Delivery Date</th>
+                                <td>@(Model.TemporaryDeliveryDate ?? "-")</td>
+                                <th>Final Delivery Date</th>
+                                <td>@(Model.FinalDeliveryDate ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Contract Duration</th>
+                                <td>@(Model.ProjectContractPeriod)</td>
+                                <th>Contract End Date</th>
+                                <td>@(Model.ContractEndDate ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Last Adjustment Statement</th>
+                                <td>@(Model.LastAdjustmentFinancialStatemntValue ?? "-")</td>
+                                <th>Last Temporary Statement</th>
+                                <td>@(Model.LastTemporaryFinancialStatemntValue ?? "-")</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td colspan="3">
+                                    @(Model.Description ?? "-")
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    @if (IsGranted("PmPortal.Project.FinancialStatement"))
+                    {
+                        <div role="tabpanel" class="tab-pane fade  p-t-10" id="profile_with_icon_title">
+                            @if (IsGranted("PmPortal.Project.FinancialStatement.Create"))
+                            {
+                                <button type="button" id="addProjectFinancialStatement" class="btn bg-green waves-effect">
+                                    New Financial Statement
+                                </button>
+                            }
+                            <div class="k-rtl m-t-20">
+                                @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.FinancialStatementViewModel>()
+                                                                                                                                                                                                  .Name("FinancialStatementGrid")
+                                                                                                                                                                                                  .Columns(columns =>
+                                                                                                                                                                                                  {
+                                                                                                                                                                                                      columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                                                                                                                                                      columns.Bound(c => c.Number).Title("Number");
+                                                                                                                                                                                                      columns.Bound(c => c.FinancialStatementType).Title("Type");
+                                                                                                                                                                                                      columns.Bound(c => c.CurrencyType).Title("Currency");
+                                                                                                                                                                                                      columns.Bound(c => c.PeriodicAmount).Title("Period Amount");
+                                                                                                                                                                                                      columns.Bound(c => c.TotalAmount).Title("Cumulative Amount");
+                                                                                                                                                                                                      columns.Bound(c => c.StartDate).Title("Start Date");
+                                                                                                                                                                                                      columns.Bound(c => c.EndDate).Title("End Date");
+                                                                                                                                                                                                      columns.Command(c => c.Custom("Download File").Click("onFinancialStatementDownload")).Width(85);
+                                                                                                                                                                                                      columns.Command(c => c.Custom("Edit").Click("onProjectFinancialStatementEdit").Visible("editStatement_Permission")).Width(85);
+                                                                                                                                                                                                      columns.Command(command => { command.Destroy().Text("Delete").Visible("destroyStatement_Permission"); }).Width(92);
+                                                                                                                                                                                                  })
+                                                                                                                                                                                                  .Pageable()
+                                                                                                                                                                                                  .Navigatable()
+                                                                                                                                                                                                  .Sortable()
+                                                                                                                                                                                                  .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                                                                                                                                                                  .Scrollable()
+                                                                                                                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                                                                                                                      .Ajax()
+                                                                                                                                                                                                      .PageSize(10)
+                                                                                                                                                                                                      .ServerOperation(false)
+                                                                                                                                                                                                      .Model(model =>
+                                                                                                                                                                                                      {
+                                                                                                                                                                                                          model.Id(p => p.Id);
+                                                                                                                                                                                                      })
+                                                                                                                                                                                                      .Read(read => read.Action("FinancialStatementRead", "Project", new { projectId = Model.Id }))
+                                                                                                                                                                                                      .Destroy(destroy => destroy.Action("FinancialStatementDestroy", "Project"))
+                                                                                                                                                                                                  )
+                                )
+                            </div>
+
+
+                        </div>
+
+                        <script>
+
+                            function editStatement_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.FinancialStatement.Edit");
+                            }
+                            function destroyStatement_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.FinancialStatement.Delete");
+                            }
+                        </script>
+                    }
+                    @if (IsGranted("PmPortal.Project.ProjectReport"))
+                    {
+                        <div role="tabpanel" class="tab-pane p-t-10 fade" id="messages_with_icon_title">
+                            @if (IsGranted("PmPortal.Project.ProjectReport.Create"))
+                            {
+                                <button type="button" id="addProjectReport" class="btn bg-green waves-effect m-b-20">
+                                    New Report
+                                </button>
+                            }
+
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.ManagaementWeekly)" data-title="@ProjectReportType.ManagaementWeekly.GetDisplayName()" class="report-type-btn  bg-green mb0 text-center ">
+                                        <h3>@ProjectReportType.ManagaementWeekly.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.Weekly)" data-title="@ProjectReportType.Weekly.GetDisplayName()" class="report-type-btn  bg-blue-grey mb0 text-center ">
+                                        <h3>@ProjectReportType.Weekly.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.Daily)" data-title="@ProjectReportType.Daily.GetDisplayName()" class="report-type-btn  bg-deep-purple mb0 text-center ">
+                                        <h3>@ProjectReportType.Daily.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.HrDaily)" data-title="@ProjectReportType.HrDaily.GetDisplayName()" class="report-type-btn  bg-deep-orange mb0 text-center ">
+                                        <h3>@ProjectReportType.HrDaily.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.Monthly)" data-title="@ProjectReportType.Monthly.GetDisplayName()" class="report-type-btn  bg-light-blue mb0 text-center ">
+                                        <h3>@ProjectReportType.Monthly.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.Contractor)" data-title="@ProjectReportType.Contractor.GetDisplayName()" class="report-type-btn  bg-teal mb0 text-center ">
+                                        <h3>@ProjectReportType.Contractor.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.HSE)" data-title="@ProjectReportType.HSE.GetDisplayName()" class="report-type-btn  bg-light-green mb0 text-center ">
+                                        <h3>@ProjectReportType.HSE.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectReportType.Other)" data-title="@ProjectReportType.Other.GetDisplayName()" class="report-type-btn  bg-amber mb0 text-center ">
+                                        <h3>@ProjectReportType.Other.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <script>
+
+                            function editReport_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectReport.Edit");
+                            }
+                            function detroyReport_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectReport.Delete");
+                            }
+                        </script>
+
+
+                        <div class="modal fade" id="ProjectReportModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title ProjectReportModalTitle" id="defaultModalLabel"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="table-responsive">
+                                                    <div class="k-rtl m-t-20">
+                                                        @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ProjectReportViewModel>()
+                                                              .Name("ProjectReportGrid")
+                                                              .Columns(columns =>
+                                                              {
+                                                                  columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                  columns.Bound(c => c.Description).Title("Description");
+                                                                  columns.Bound(c => c.ProjectReportType).Title("Type");
+                                                                  columns.Bound(c => c.StartDate).Title("Start Date");
+                                                                  columns.Bound(c => c.EndDate).Title("End Date");
+                                                                  columns.Command(c => c.Custom("Download File").Click("onProjectReportDownload")).Width(85);
+                                                                  columns.Command(c => c.Custom("Edit").Click("onProjectReportEdit").Visible("editReport_Permission")).Width(85);
+                                                                  columns.Command(command => { command.Destroy().Text("Delete").Visible("detroyReport_Permission"); }).Width(92);
+                                                              })
+                                                              .Pageable()
+                                                              .Navigatable()
+                                                              .Sortable()
+                                                              .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                              .Scrollable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .PageSize(10)
+                                                                  .ServerOperation(false)
+                                                                  .Model(model =>
+                                                                  {
+                                                                      model.Id(p => p.Id);
+                                                                  })
+                                                                  .Read(read => read.Action("ProjectReportRead", "Project", new { projectId = Model.Id }).Data("additionalReportInfo"))
+                                                                  .Destroy(destroy => destroy.Action("ProjectReportDestroy", "Project"))
+                                                              )
+                                                         )
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+
+
+
+
+
+                    @if (IsGranted("PmPortal.Project.ProjectPlan"))
+                    {
+                        <div role="tabpanel" class="tab-pane p-t-10 fade" id="ProjectPlanSection">
+                            @if (IsGranted("PmPortal.Project.ProjectPlan.Create"))
+                            {
+                                <button type="button" id="addProjectPlan" class="btn bg-green waves-effect m-b-20">
+                                    New Report
+                                </button>
+                            }
+
+                            <div class="row">
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectPlanType.MonthlyBudgetPlan)" data-title="@ProjectPlanType.MonthlyBudgetPlan.GetDisplayName()" class="plan-type-btn  bg-blue mb0 text-center ">
+                                        <h3>@ProjectPlanType.MonthlyBudgetPlan.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectPlanType.TimingPlan)" data-title="@ProjectPlanType.TimingPlan.GetDisplayName()" class="plan-type-btn  bg-indigo mb0 text-center ">
+                                        <h3>@ProjectPlanType.TimingPlan.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+
+                                <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 mb0">
+                                    <a href="javascript:;" data-type="@((int)ProjectPlanType.Other)" data-title="@ProjectPlanType.Other.GetDisplayName()" class="plan-type-btn  bg-cyan mb0 text-center ">
+                                        <h3>@ProjectPlanType.Other.GetDisplayName()</h3>
+                                    </a>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <script>
+
+                            function editPlan_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectPlan.Edit");
+                            }
+                            function detroyPlan_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectPlan.Delete");
+                            }
+                        </script>
+
+
+                        <div class="modal" id="ProjectPlanModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title ProjectPlanModalTitle" id="defaultModalLabel"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="table-responsive">
+                                                    <div class="k-rtl m-t-20">
+                                                        @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ProjectPlanViewModel>()
+                                                              .Name("ProjectPlanGrid")
+                                                              .Columns(columns =>
+                                                              {
+                                                                  columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                  columns.Bound(c => c.Description).Title("Description");
+                                                                  columns.Bound(c => c.ProjectPlanType).Title("Type");
+                                                                  columns.Bound(c => c.StartDate).Title("Start Date");
+                                                                  columns.Bound(c => c.EndDate).Title("End Date");
+                                                                  columns.Command(c => c.Custom("Download File").Click("onProjectReportDownload")).Width(85);
+                                                                  columns.Command(c => c.Custom("Edit").Click("onProjectReportEdit").Visible("editPlan_Permission")).Width(85);
+                                                                  columns.Command(command => { command.Destroy().Text("Delete").Visible("detroyPlan_Permission"); }).Width(92);
+                                                              })
+                                                              .Pageable()
+                                                              .Navigatable()
+                                                              .Sortable()
+                                                              .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                              .Scrollable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .PageSize(10)
+                                                                  .ServerOperation(false)
+                                                                  .Model(model =>
+                                                                  {
+                                                                      model.Id(p => p.Id);
+                                                                  })
+                                                                  .Read(read => read.Action("ProjectPlanRead", "Project", new { projectId = Model.Id }).Data("additionalPlanInfo"))
+                                                                  .Destroy(destroy => destroy.Action("ProjectReportDestroy", "Project"))
+                                                              )
+                                                         )
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+
+
+
+
+
+                    @if (IsGranted("PmPortal.Project.ProjectMedia"))
+                    {
+                        <div role="tabpanel" class="tab-pane fade p-t-10" id="settings_with_icon_title">
+                            @if (IsGranted("PmPortal.Project.ProjectMedia.Create"))
+                            {
+                                <button type="button" data-toggle="modal" data-target="#addProjectMediaModal" class="btn bg-green waves-effect">
+                                    New Image
+                                </button>
+                            }
+
+                            <div class="k-rtl m-t-20">
+                                @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ProjectMediaViewModel>()
+                                               .Name("ProjectMediaGrid")
+                                               .Columns(columns =>
+                                               {
+                                                   columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                   columns.Bound(c => c.Title).Title("Title");
+                                                   columns.Bound(c => c.SubmitDate).Title("Date");
+                                                   columns.Command(c => c.Custom("Download File").Click("onProjectMediaDownload")).Width(85);
+                                                   columns.Command(command => { command.Destroy().Text("Delete").Visible("destroyMedia_Permission"); }).Width(92);
+                                               })
+                                               .Pageable()
+                                               .Navigatable()
+                                               .Sortable()
+                                               .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                               .Scrollable()
+                                               .DataSource(dataSource => dataSource
+                                                   .Ajax()
+                                                   .PageSize(10)
+                                                   .ServerOperation(false)
+                                                   .Model(model =>
+                                                   {
+                                                       model.Id(p => p.Id);
+                                                   })
+                                                   .Read(read => read.Action("ProjectMediaRead", "Project", new { projectId = Model.Id }))
+                                                   .Destroy(destroy => destroy.Action("ProjectMediaDestroy", "Project"))
+                                               )
+                                )
+                            </div>
+                        </div>
+                        <script>
+
+                            function destroyMedia_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectMedia.Delete");
+                            }
+                        </script>
+                    }
+
+                    @if (IsGranted("PmPortal.Project.ProjectAsset"))
+                    {
+                        <div role="tabpanel" class="tab-pane fade p-t-10" id="assets_with_icon_title">
+                            @if (IsGranted("PmPortal.Project.ProjectAsset.Create"))
+                            {
+                                <button type="button" data-toggle="modal" data-target="#addProjectAssetModal" class="btn bg-green waves-effect">
+                                    New File
+                                </button>
+                            }
+                            @if (Model.AssetFileUrl != null)
+                            {
+                                <table class="table table-bordered m-t-20">
+                                    <tr>
+                                        <td>
+                                            @Model.AssetFileLastModifyDate
+                                        </td>
+                                        <td>
+                                            <a target="_blank" href="/uploads/@Model.AssetFileUrl">Download File</a>
+                                        </td>
+                                        <td>
+                                            <a id="RemoveAssetFile" href="javascript:;">Delete File</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            }
+
+
+
+                        </div>
+                        <script>
+
+                            function destroyMedia_Permission() {
+                                return abp.auth.isGranted("PmPortal.Project.ProjectMedia.Delete");
+                            }
+                        </script>
+                    }
+
+                    @if (IsGranted("PmPortal.Project.ProjectGallery"))
+                    {
+                        <div role="tabpanel" class="tab-pane fade p-t-10" id="settings_with_icon_title1">
+
+                            <div id="lightgallery" class="list-unstyled row clearfix"></div>
+
+                            <style>
+                                .lg-inner {
+                                    direction: ltr !important;
+                                }
+
+                                #lightGallery-Gallery .thumb_cont {
+                                    direction: ltr;
+                                }
+                            </style>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addFinancialStatementModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="FinancialStatementFormWrapper">
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#addProjectFinancialStatement").click(function () {
+        generateFinancialStatementForm("");
+    });
+
+    function onProjectFinancialStatementEdit(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        generateFinancialStatementForm(dataItem.id);
+    }
+
+    function generateFinancialStatementForm(id) {
+        $.ajax({
+            type: "GET",
+            url: "/Project/OpenFinancialStatementForm?id=" + id + "&projectId=" + $("#ProjectId").val(),
+            success: function (response) {
+                var dvItems = $("#FinancialStatementFormWrapper");
+                dvItems.empty();
+                dvItems.html(response);
+                $('#addFinancialStatementModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+
+    function onFinancialStatementDownload(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (dataItem.FileUrl) {
+            window.open(
+                dataItem.FileUrl,
+                '_blank' // <- This is what makes it open in a new window.
+            );
+        }
+        else {
+            alert("No file available");
+        }
+
+    }
+</script>
+
+
+<div class="modal fade" id="addProjectReportModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="ProjectReportFormWrapper">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#addProjectReport").click(function () {
+        generateProjectReportForm("");
+    });
+
+    function onProjectReportEdit(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        generateProjectReportForm(dataItem.id);
+    }
+
+    function generateProjectReportForm(id) {
+        $.ajax({
+            type: "GET",
+            url: "/Project/OpenProjectReportForm?id=" + id + "&projectId=" + $("#ProjectId").val(),
+            success: function (response) {
+                var dvItems = $("#ProjectReportFormWrapper");
+                dvItems.empty();
+                dvItems.html(response);
+                $('#addProjectReportModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+
+    function onProjectReportDownload(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (dataItem.FileUrl) {
+            window.open(
+                dataItem.FileUrl,
+                '_blank'
+            );
+        }
+        else {
+            alert("No file available");
+        }
+
+    }
+</script>
+
+
+
+
+
+<div class="modal fade" id="addProjectPlanModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="ProjectPlanFormWrapper">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#addProjectPlan").click(function () {
+        generateProjectPlanForm("");
+    });
+
+    function onProjectPlanEdit(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        generateProjectPlanForm(dataItem.id);
+    }
+
+    function generateProjectPlanForm(id) {
+        $.ajax({
+            type: "GET",
+            url: "/Project/OpenProjectPlanForm?id=" + id + "&projectId=" + $("#ProjectId").val(),
+            success: function (response) {
+                var dvItems = $("#ProjectPlanFormWrapper");
+                dvItems.empty();
+                dvItems.html(response);
+                $('#addProjectPlanModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+
+    function onProjectPlanDownload(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (dataItem.FileUrl) {
+            window.open(
+                dataItem.FileUrl,
+                '_blank'
+            );
+        }
+        else {
+            alert("No file available");
+        }
+
+    }
+</script>
+
+
+
+
+
+
+
+
+<div class="modal fade" id="addProjectMediaModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addProjectMediaForm" asp-action="AddProjectMedia" asp-controller="Project" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Add New Image</h4>
+                </div>
+                <hr />
+                @Html.HiddenFor(model => model.ProjectMediaForm.ProjectId)
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="">Title</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProjectMediaForm.Title, new { @class = "form-control", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProjectMediaForm.SubmitDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">File</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input id="ProjectMediaInput" name="ProjectMediaInput" type="file" class="m-t-15" multiple />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Submit</button>
+                    <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#addProjectMediaForm").submit(function (e) {
+        e.preventDefault();
+        console.log('Doing ajax submit');
+        var formAction = $(this).attr("action");
+
+        var fdata = new FormData(this);
+
+        //var fileInput = $('#ProjectMediaInput')[0];
+        //var files = fileInput.files[0];
+        //fdata.append("files", files);
+
+        if ($('#ProjectMediaInput')[0].files.length > 10) {
+            alert("Maximum number of files is 10!");
+            return;
+        }
+
+        $.each($('#ProjectMediaInput')[0].files, function (i, file) {
+            fdata.append('files', file);
+        });
+
+        $.ajax({
+            type: 'post',
+            url: formAction,
+            data: fdata,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false
+        }).done(function (result) {
+            if (result.status === "success") {
+                $('#addProjectMediaModal').modal('hide');
+                $('#addProjectMediaForm').trigger("reset");
+                $('#ProjectMediaGrid').data('kendoGrid').dataSource.read();
+                $('#ProjectMediaGrid').data('kendoGrid').refresh();
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+
+    function onProjectMediaDownload(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (dataItem.ImageUrl) {
+            window.open(
+                dataItem.ImageUrl,
+                '_blank' // <- This is what makes it open in a new window.
+            );
+        }
+        else {
+            alert("No file available");
+        }
+
+    }
+</script>
+
+<div class="modal fade" id="addProjectAssetModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addProjectAssetForm" asp-action="AddProjectAsset" asp-controller="Project" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Add New File</h4>
+                </div>
+                <hr />
+                <input type="hidden" name="projectId" id="projectId" value="@Model.ProjectMediaForm.ProjectId" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input id="LastAssetFile" name="LastAssetFile" type="text" class="form-control simple-datepicker" placeholder="" autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">File</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input id="AssetFileInput" name="AssetFileInput" type="file" class="m-t-15" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Submit</button>
+                    <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#addProjectAssetForm").submit(function (e) {
+        e.preventDefault();
+        var formAction = $(this).attr("action");
+
+        var fdata = new FormData(this);
+
+        var fileInput = $('#AssetFileInput')[0];
+        var files = fileInput.files[0];
+        fdata.append("file", files);
+
+        $.ajax({
+            type: 'post',
+            url: formAction,
+            data: fdata,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false
+        }).done(function (result) {
+            if (result.status === "success") {
+                location.reload();
+                $('#addProjectAssetModal').modal('hide');
+                $('#addProjectAssetForm').trigger("reset");
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+
+
+    $("#RemoveAssetFile").click(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: 'post',
+            url: '/Project/DeleteAssetFile',
+            data: { projectId: $("#ProjectId").val() },
+        }).done(function (result) {
+            if (result.status === "success") {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        });
+    });
+
+
+
+</script>
+
+<input type="hidden" id="SelectedReportType" value="" />
+<input type="hidden" id="SelectedPlanType" value="" />
+
+<script>
+    $('.report-type-btn , .plan-type-btn').click(function () {
+        if (this.className.indexOf('report-type-btn') >= 0) {
+            var type = $(this).data("type");
+            var title = $(this).data("title");
+
+            $("#SelectedReportType").val(type);
+            $(".ProjectReportModalTitle").html(title);
+
+
+            $('#ProjectReportGrid').data('kendoGrid').dataSource.read();
+            $('#ProjectReportGrid').data('kendoGrid').refresh();
+
+            $('#ProjectReportModal').modal('show');
+
+        }
+
+        if (this.className.indexOf('plan-type-btn') >= 0) {
+            var type = $(this).data("type");
+            var title = $(this).data("title");
+
+            $("#SelectedPlanType").val(type);
+            $(".ProjectPlanModalTitle").html(title);
+
+
+            $('#ProjectPlanGrid').data('kendoGrid').dataSource.read();
+            $('#ProjectPlanGrid').data('kendoGrid').refresh();
+
+            $('#ProjectPlanModal').modal('show');
+
+        }
+    });
+
+    function additionalReportInfo() {
+        return {
+            type: $("#SelectedReportType").val(),
+        }
+    }
+
+    function additionalPlanInfo() {
+        return {
+            type: $("#SelectedPlanType").val(),
+        }
+    }
+</script>
+
+<style>
+    .report-type-btn {
+        display: block;
+        padding: 10px 0px 15px 0px;
+    }
+
+        .report-type-btn:hover {
+            text-decoration: none;
+        }
+
+        .report-type-btn h3 {
+            font-size: 20px;
+            font-weight: normal;
+        }
+
+    .plan-type-btn {
+        display: block;
+        padding: 10px 0px 15px 0px;
+    }
+
+        .plan-type-btn:hover {
+            text-decoration: none;
+        }
+
+        .plan-type-btn h3 {
+            font-size: 20px;
+            font-weight: normal;
+        }
+</style>
+
+<script>
+    const ProjectID = document.URL.split('Details/').pop();
+    var Coefficient = 1;
+    var Start = 50;
+    var End = 65;
+    var List = []; //If Data Exists in List Do Nothing
+
+    //After Page Compiled , Load The First 50 Pictures
+    $(document).ready(function () {
+        $.ajax({
+            type: "POST",
+            data: { 'ID': ProjectID, 'Start': 0, 'End': 50 },
+            url: "/Project/ProjectMediaAjax",
+            dataType: 'JSON',
+            success: function (response) {
+                for (var Index = 0; Index <= Object.keys(response).length; Index++) {
+
+                    $('#lightgallery').append('<div class="LightGallery col-lg-2 col-md-2 col-sm-6 col-xs-6" data-src="' + response[Index].ImageUrl + '" data-sub-html="<h2> ' + response[Index].SubmitDate + ' - ' + response[Index].Title + '</h2>">\
+                                                      <a data-src="'+ response[Index].ImageUrl + '">\
+                                                           <img class="LightGallery img-responsive thumbnail" src="'+ response[Index].ImageUrl + '">\
+                                                      </a>\
+                                                      <span class="gallery-img-date">'+ response[Index].SubmitDate + '</span>\
+                                                </div>\
+                                              ');
+                }
+            },
+            failure: function () {
+                alert("No data available");
+            }
+        });
+    });
+
+
+
+    $('#GalleryButton').click(function () {
+
+        ScrollEvent("ON");
+        //$('#lightgallery').lightGallery(); //This Part Of Code Is For Slider - Should Not Move From Here - It Just Works Here
+        $('#lightgallery').lightGallery();
+
+    });
+
+    $('#FinancialStatementButton,#BasicInfoButton,#ReportsButton,#PlansButton,#FinancialButton,#AddPictureButton').click(function () {
+
+        ScrollEvent("OFF");
+
+    });
+
+    function ScrollEvent(Event) {
+
+        if (Event == "ON") {
+
+            $(window).on('scroll', function (event) {
+
+                var ScrollFromTop = $(document).scrollTop(); // This Part Of Code Should Not Move From Here
+
+                if (ScrollFromTop >= 400 * Coefficient) {
+
+                    if ($.inArray(ScrollFromTop, List) == -1) {
+
+                        //Didn't Find ScrollPoint In List
+
+                        List.push(ScrollFromTop); //Add Point To List If Scroll Reached That Point - Then Check If Already Reached That Point To Prevent Loading Pictures Again
+
+                        $.ajax({
+                            type: "POST",
+
+                            data: { 'ID': ProjectID, 'Start': Start, 'End': End },
+
+                            url: "/Project/ProjectMediaAjax",
+                            dataType: 'JSON',
+                            success: function (response) {
+                                for (var Index = 0; Index <= Object.keys(response).length; Index++) {
+
+                                    $('#lightgallery').append('<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6" data-src="' + response[Index].ImageUrl + '" data-sub-html="<h2> ' + response[Index].SubmitDate + ' - ' + response[Index].Title + '</h2>">\
+                                                      <a data-src="'+ response[Index].ImageUrl + '">\
+                                                           <img class="img-responsive thumbnail" src="'+ response[Index].ImageUrl + '">\
+                                                      </a>\
+                                                      <span class="gallery-img-date">'+ response[Index].SubmitDate + '</span>\
+                                                </div>\
+                                              ');
+                                    //Every Time That New Group Of Pictures Has Been Read From Database We Must Destroy The Last Gallery And Create New One
+                                    $("#lightgallery").data("lightGallery").destroy(true);
+                                    $('#lightgallery').lightGallery(); 
+                                }
+                            },
+
+                            failure: function () {
+                                alert("No data available");
+                            }
+
+                        });
+                        Coefficient++;
+                        Start = Start + 15;
+                        End = End + 15;
+                    }
+                }
+            })
+
+        } else if (Event == "OFF") {
+
+            $(window).off('scroll'); //It Turns Off The  $(window).on('DOMMouseScroll mousewheel', function (event) {... } EventHandler At Top After It Clicked On Any Other Button Except GalleryButton
+
+        }
+    }
+
+</script>

@@ -1,0 +1,1279 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+            @if (IsGranted("PmPortal.Dashboard.Projects"))
+            {
+                <a href="@Url.Action("Index","Home")" class="btn bg-blue-grey waves-effect no-radius  dashboard-active" role="button">Projects Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Allocation"))
+            {
+                <a href="@Url.Action("Allocation","Home")" class="btn bg-indigo waves-effect no-radius" role="button">Allocation Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Managers"))
+            {
+                <a href="@Url.Action("Managers","Dashboard")" class="btn bg-teal waves-effect no-radius" role="button">Management Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.ProjectsDocumentations"))
+            {
+                <a href="@Url.Action("ProjectsDocumentations","Dashboard")" class="btn bg-primary waves-effect no-radius" role="button">Engineering Dashboard</a>
+            }
+        </div>
+    </div>
+</div>
+
+
+@if (IsGranted("PmPortal.Dashboard.Projects"))
+{
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Projects Dashboard (figures in million Rials)</h2>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("ProjectId", null, new { @class = "form-control", data_live_search = "true" })
+                    </div>
+                </div>
+            </div>
+            @*<div class="body">
+
+                </div>*@
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2 class="p-t-5">Annual and Cumulative Sales</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="forooshSalane"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2 class="p-t-5"> Cumulative Profit Margin</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="hashieSood"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="p-t-5"><a href="javascript:;" id="GoPaymentAndReceiveChart">Annual and Cumulative Receipts and Payments</a></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="daryadftPardakhtSalane"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="p-t-5">Workforce Count</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="nirooEnsani"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="p-t-5">Annual and Cumulative Progress Percentage</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="darsadPishraft"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="p-t-5">Guarantees Held by the Employer</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="zemanatname"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+}
+
+<script>
+
+    var ctx = document.getElementById('hashieSood');
+    var hashieSoodChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Profit Margin",
+                data: [],
+                borderColor: 'rgba(255, 192, 0)',
+                backgroundColor: 'rgba(0, 188, 212, 0.0)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split("month");
+                            value = value.join(" month ");
+                            return value;
+                        }
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+
+    var ctx_forooshSalane = document.getElementById('forooshSalane');
+    var forooshSalaneChart = new Chart(ctx_forooshSalane, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Cumulative Sales",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(190, 75, 255)',
+                    type: 'line'
+
+                },
+                {
+                    label: 'Recycled Sales',
+                    data: [],
+                    backgroundColor: 'rgba(228, 200, 253)',
+                    type: 'bar',
+                    stack: 'Stack 0',
+                },
+                {
+                    label: 'Approved Sales',
+                    data: [],
+                    backgroundColor: 'rgba(188, 74, 255)',
+                    stack: 'Stack 0',
+                    type: 'bar'
+                },
+                {
+                    label: "Actual Sales",
+                    data: [],
+                    backgroundColor: 'rgba(90, 80, 12, 0.0)',
+                    borderColor: 'rgba(0, 175, 155)',
+                    type: 'line'
+
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split("month");
+                            value = value.join(' month ');
+                            return value;
+                        }
+                    }
+                }],
+                yAxes: [{
+                    //stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+
+        }
+    });
+
+    var ctx_daryadftPardakhtSalane = document.getElementById('daryadftPardakhtSalane');
+    var daryadftPardakhtSalaneChart = new Chart(ctx_daryadftPardakhtSalane, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Receipts',
+                    data: [],
+                    backgroundColor: 'rgba(5, 91, 237)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Payments',
+                    data: [],
+                    backgroundColor: 'rgba(222, 11, 0)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Cumulative Receipts',
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(5, 91, 237)',
+                    type: 'line'
+                },
+                {
+                    label: 'Cumulative Payments',
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(222, 11, 0)',
+                    type: 'line'
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+
+
+
+    var ctx_darsadPishraft = document.getElementById('darsadPishraft');
+    var darsadPishraftChart = new Chart(ctx_darsadPishraft, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Cumulative Progress Percentage",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(0, 176, 240)',
+                    type: 'line'
+
+                },
+                {
+                    label: 'Annual Progress Percentage',
+                    data: [],
+                    backgroundColor: 'rgba(5, 188, 254)',
+                    type: 'bar'
+                }
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    beginAtZero: true
+                }],
+                yAxes: [{
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        },
+                        min: 0, // minimum value
+                        max: 100 // maximum value
+                    },
+
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                //console.log(e._index)
+                var x_value = this.data.labels[e._index];
+                //var y_value = this.data.datasets[0].data[e._index];
+                LoadMothlyProgressChart($("#ProjectId").val(), x_value);
+                //console.log(y_value);
+            }
+        }
+    });
+
+
+
+
+    var ctx_zemanatname = document.getElementById('zemanatname');
+    var zemanatnameChart = new Chart(ctx_zemanatname, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Performance Bond',
+                    data: [],
+                    backgroundColor: 'rgba(255, 209, 7)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Advance Payment',
+                    data: [],
+                    backgroundColor: 'rgba(162, 227, 92)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Retention Deduction',
+                    data: [],
+                    backgroundColor: 'rgba(192,145,239)',
+                    type: 'bar'
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+
+
+
+
+    var ctx_labors = document.getElementById('nirooEnsani');
+    var nirooEnsani = new Chart(ctx_labors, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Workforce Count",
+                data: [],
+                backgroundColor: 'rgba(253,152,253)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split("Esfand");
+                            value = value.join('');
+                            return value;
+                        }
+                    }
+                }],
+
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                    },
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                //console.log(e._index)
+                var x_value = this.data.labels[e._index];
+                x_value = x_value.split(/([0-9]+)/)[1];
+                //var y_value = this.data.datasets[0].data[e._index];
+                LoadMothlyLaborChart($("#ProjectId").val(), x_value);
+                //console.log(y_value);
+            }
+        }
+    });
+
+
+    var getData = function (projectId) {
+
+        $.ajax({
+            url: '/Dashboard/GetCostBenefitChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                hashieSoodChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element);
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element);
+                });
+
+                for (var Index = 0; Index < Years.length; Index++) {
+                    hashieSoodChart.data.labels.push(LastMonth[Index] + Years[Index]);
+                };
+
+                hashieSoodChart.data.datasets[0].data = [];
+                data.profits.forEach(function (element) {
+                    hashieSoodChart.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                hashieSoodChart.update();
+            }
+        });
+
+        $.ajax({
+            url: '/Dashboard/GetCostBenefitSaleChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                forooshSalaneChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element);
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element);
+                });
+
+                for (var Index = 0; Index < Years.length; Index++) {
+                    forooshSalaneChart.data.labels.push(LastMonth[Index] + Years[Index]);
+                };
+
+                forooshSalaneChart.data.datasets[0].data = [];
+                data.totalSales.forEach(function (element) {
+                    forooshSalaneChart.data.datasets[0].data.push(element);
+                });
+
+                forooshSalaneChart.data.datasets[1].data = [];
+                data.recycleSales.forEach(function (element) {
+                    forooshSalaneChart.data.datasets[1].data.push(element);
+                });
+
+                forooshSalaneChart.data.datasets[2].data = [];
+                data.approvedSales.forEach(function (element) {
+                    forooshSalaneChart.data.datasets[2].data.push(element);
+                });
+
+                forooshSalaneChart.data.datasets[3].data = [];
+                data.amalkardiSales.forEach(function (element) {
+                    forooshSalaneChart.data.datasets[3].data.push(element);
+                });
+
+                // re-render the chart
+                forooshSalaneChart.update();
+            }
+        });
+
+
+        $.ajax({
+            url: '/Dashboard/GetReceiveAndPaymentChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                daryadftPardakhtSalaneChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    daryadftPardakhtSalaneChart.data.labels.push(element);
+                });
+
+                daryadftPardakhtSalaneChart.data.datasets[0].data = [];
+                data.receives.forEach(function (element) {
+                    daryadftPardakhtSalaneChart.data.datasets[0].data.push(element);
+                });
+
+                daryadftPardakhtSalaneChart.data.datasets[1].data = [];
+                data.payments.forEach(function (element) {
+                    daryadftPardakhtSalaneChart.data.datasets[1].data.push(element);
+                });
+
+                daryadftPardakhtSalaneChart.data.datasets[2].data = [];
+                data.receivesTajamoyi.forEach(function (element) {
+                    daryadftPardakhtSalaneChart.data.datasets[2].data.push(element);
+                });
+
+                daryadftPardakhtSalaneChart.data.datasets[3].data = [];
+                data.paymentsTajamoyi.forEach(function (element) {
+                    daryadftPardakhtSalaneChart.data.datasets[3].data.push(element);
+                });
+
+                // re-render the chart
+                daryadftPardakhtSalaneChart.update();
+            }
+        });
+
+
+        $.ajax({
+            url: '/Dashboard/GetWarrantyBalanceChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                zemanatnameChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    zemanatnameChart.data.labels.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[0].data = [];
+                data.ejrayeTahodat.forEach(function (element) {
+                    zemanatnameChart.data.datasets[0].data.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[1].data = [];
+                data.pishDaryaft.forEach(function (element) {
+                    zemanatnameChart.data.datasets[1].data.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[2].data = [];
+                data.vajhoZeman.forEach(function (element) {
+                    zemanatnameChart.data.datasets[2].data.push(element);
+                });
+
+                // re-render the chart
+                zemanatnameChart.update();
+            }
+        });
+
+        $.ajax({
+            url: '/Dashboard/GetProgressPercentageChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                darsadPishraftChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    darsadPishraftChart.data.labels.push(element);
+                });
+
+                darsadPishraftChart.data.datasets[0].data = [];
+                data.totalProgressPercentage.forEach(function (element) {
+                    darsadPishraftChart.data.datasets[0].data.push(element);
+                });
+
+                darsadPishraftChart.data.datasets[1].data = [];
+                data.yearlyProgressPercentage.forEach(function (element) {
+                    darsadPishraftChart.data.datasets[1].data.push(element);
+                });
+
+                // re-render the chart
+                darsadPishraftChart.update();
+            }
+        });
+
+
+        $.ajax({
+            url: '/Dashboard/GetlaborInventoryChartDatas',
+            data: { "projectId": projectId },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                nirooEnsani.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element);
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element);
+                });
+
+                for (var Index = 0; Index < Years.length; Index++) {
+                    nirooEnsani.data.labels.push(LastMonth[Index] + Years[Index]);
+                };
+
+                nirooEnsani.data.datasets[0].data = [];
+                data.labors.forEach(function (element) {
+                    nirooEnsani.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                nirooEnsani.update();
+            }
+        });
+
+    };
+
+
+    $(document).ready(function () {
+        getData($("#ProjectId").val());
+    });
+
+    $("#ProjectId").change(function () {
+        getData($("#ProjectId").val());
+    });
+
+    $("#GoPaymentAndReceiveChart").click(function () {
+        window.location = "/Dashboard/PaymentAndReceive/" + $("#ProjectId").val();
+    });
+
+    $('.modal').on("hidden.bs.modal", function (e) {
+        if ($('.modal:visible').length) {
+            $('body').addClass('modal-open');
+        }
+    });
+</script>
+
+
+
+
+
+<div class="modal fade" id="laborMonthlyChartModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="laborMonthlyChartModalTitle">----</h4>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="laborMonthlyChart"></canvas>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ctx_labors = document.getElementById('laborMonthlyChart');
+    var nirooEnsaniMonthly = new Chart(ctx_labors, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Workforce Count",
+                data: [],
+                backgroundColor: 'rgba(253,152,253)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                    },
+                }]
+            }
+        }
+    });
+
+    function LoadMothlyLaborChart(projectId, year) {
+        $("#laborMonthlyChartModalTitle").html("Monthly Workforce Report for Year " + year);
+        $.ajax({
+            url: '/Dashboard/GetlaborInventoryMonthlyChartDatas',
+            data: { "projectId": projectId, "year": year },
+            success: function (data) {
+                nirooEnsaniMonthly.data.labels = [];
+
+                data.month.forEach(function (element) {
+
+                    nirooEnsaniMonthly.data.labels.push(element);
+                });
+
+                nirooEnsaniMonthly.data.datasets[0].data = [];
+                data.labors.forEach(function (element) {
+                    nirooEnsaniMonthly.data.datasets[0].data.push(element);
+                });
+
+                $('#laborMonthlyChartModal').modal('show');
+
+                // re-render the chart
+                nirooEnsaniMonthly.update();
+
+            }
+        });
+    }
+
+
+</script>
+
+
+
+<div class="modal fade" id="progressMonthlyChartModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="darsadPishraftMonthlyChartModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="darsadPishraftMonthlyChart"></canvas>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ctx_progress_monthly = document.getElementById('darsadPishraftMonthlyChart');
+    var darsadPishraftMonthly = new Chart(ctx_progress_monthly, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Total Planned Progress Percentage',
+                    data: [],
+                    backgroundColor: 'rgba(255, 192, 0)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Total Actual Progress Percentage',
+                    data: [],
+                    backgroundColor: 'rgba(0, 176, 240)',
+                    type: 'bar'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            scales: {
+                xAxes: [{
+                    beginAtZero: true
+                }],
+                yAxes: [{
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toFixed(2).toString() + "%";
+                            return value;
+                        },
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                    }
+                }]
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + tooltipValue.toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                //console.log(e._index)
+                var x_value = this.data.labels[e._index];
+                //var y_value = this.data.datasets[0].data[e._index];
+                LoadMothProgressPercentageChart($("#ProjectId").val(), $("#CurrentProgressYear").val(), e._index + 1);
+                //console.log(y_value);
+            }
+        }
+    });
+
+    function LoadMothlyProgressChart(projectId, year) {
+        $("#CurrentProgressYear").val(year);
+        $("#darsadPishraftMonthlyChartModalTitle").html("Periodic Progress Percentage for Year " + year);
+        $.ajax({
+            url: '/Dashboard/GetProgressPercentageMonthlyChartDatas',
+            data: { "projectId": projectId, "year": year },
+            success: function (data) {
+                darsadPishraftMonthly.data.labels = [];
+
+                data.months.forEach(function (element) {
+                    darsadPishraftMonthly.data.labels.push(element);
+                });
+
+                darsadPishraftMonthly.data.datasets[0].data = [];
+                data.plans.forEach(function (element) {
+                    darsadPishraftMonthly.data.datasets[0].data.push(element);
+                });
+
+                darsadPishraftMonthly.data.datasets[1].data = [];
+                data.reals.forEach(function (element) {
+                    darsadPishraftMonthly.data.datasets[1].data.push(element);
+                });
+
+                $('#progressMonthlyChartModal').modal('show');
+
+                // re-render the chart
+                darsadPishraftMonthly.update();
+
+            }
+        });
+    }
+</script>
+
+
+
+
+
+<div class="modal fade" id="progressMonthChartModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="darsadPishraftMonthChartModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <p>Cumulative Engineering Progress</p>
+                        <div class="chart-container" style="position: relative; height:auto;">
+                            <canvas id="darsadPishraftMonthChart_Engineering"></canvas>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <p>Cumulative Procurement Progress</p>
+                        <div class="chart-container" style="position: relative; height:auto;">
+                            <canvas id="darsadPishraftMonthChart_Supply"></canvas>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <p>Cumulative Execution Progress</p>
+                        <div class="chart-container" style="position: relative; height:auto;">
+                            <canvas id="darsadPishraftMonthChart_Execution"></canvas>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var ctx_progress_month_Engineering = document.getElementById('darsadPishraftMonthChart_Engineering');
+    var darsadPishraftMonth_Engineering = new Chart(ctx_progress_month_Engineering, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Planned Progress Percentage',
+                    data: [80, 20],
+                    backgroundColor: ["#ffc000", "#fffbef"],
+                    type: 'doughnut'
+                },
+                {
+                    label: 'Actual Progress Percentage',
+                    data: [40, 60],
+                    backgroundColor: ["#00b0f0", "#effbff"],
+                    type: 'doughnut'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : %" + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            }
+        }
+    });
+
+    var ctx_progress_month_Supply = document.getElementById('darsadPishraftMonthChart_Supply');
+    var darsadPishraftMonth_Supply = new Chart(ctx_progress_month_Supply, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Planned Progress Percentage',
+                    data: [80, 20],
+                    backgroundColor: ["#ffc000", "#fffbef"],
+                    type: 'doughnut'
+                },
+                {
+                    label: 'Actual Progress Percentage',
+                    data: [40, 60],
+                    backgroundColor: ["#00b0f0", "#effbff"],
+                    type: 'doughnut'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : %" + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            }
+        }
+    });
+
+
+    var ctx_progress_month_Execution = document.getElementById('darsadPishraftMonthChart_Execution');
+    var darsadPishraftMonth_Execution = new Chart(ctx_progress_month_Execution, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Planned Progress Percentage',
+                    data: [80, 20],
+                    backgroundColor: ["#ffc000", "#fffbef"],
+                    type: 'doughnut'
+                },
+                {
+                    label: 'Actual Progress Percentage',
+                    data: [10, 90],
+                    backgroundColor: ["#00b0f0", "#effbff"],
+                    type: 'doughnut'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : %" + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            }
+        }
+    });
+
+    function LoadMothProgressPercentageChart(projectId, year, month) {
+        $.ajax({
+            url: '/Dashboard/GetProgressPercentageMonthChartDatas',
+            data: { "projectId": projectId, "year": year, "month": month },
+            success: function (data) {
+
+                darsadPishraftMonth_Engineering.data.datasets[0].data = [];
+                darsadPishraftMonth_Engineering.data.datasets[0].data.push(data.plans_Engineering);
+                darsadPishraftMonth_Engineering.data.datasets[0].data.push(100 - data.plans_Engineering);
+
+                darsadPishraftMonth_Engineering.data.datasets[1].data = [];
+                darsadPishraftMonth_Engineering.data.datasets[1].data.push(data.reals_Engineering);
+                darsadPishraftMonth_Engineering.data.datasets[1].data.push(100 - data.reals_Engineering);
+
+                darsadPishraftMonth_Engineering.update();
+
+
+
+                darsadPishraftMonth_Execution.data.datasets[0].data = [];
+                darsadPishraftMonth_Execution.data.datasets[0].data.push(data.plans_Execution);
+                darsadPishraftMonth_Execution.data.datasets[0].data.push(100 - data.plans_Execution);
+
+                darsadPishraftMonth_Execution.data.datasets[1].data = [];
+                darsadPishraftMonth_Execution.data.datasets[1].data.push(data.reals_Execution);
+                darsadPishraftMonth_Execution.data.datasets[1].data.push(100 - data.reals_Execution);
+
+                darsadPishraftMonth_Execution.update();
+
+
+
+                darsadPishraftMonth_Supply.data.datasets[0].data = [];
+                darsadPishraftMonth_Supply.data.datasets[0].data.push(data.plans_Supply);
+                darsadPishraftMonth_Supply.data.datasets[0].data.push(100 - data.plans_Supply);
+
+                darsadPishraftMonth_Supply.data.datasets[1].data = [];
+                darsadPishraftMonth_Supply.data.datasets[1].data.push(data.reals_Supply);
+                darsadPishraftMonth_Supply.data.datasets[1].data.push(100 - data.reals_Supply);
+
+                $("#darsadPishraftMonthChartModalTitle").html("Cumulative Progress Percentage " + data.monthName);
+
+                darsadPishraftMonth_Supply.update();
+
+            }
+        });
+        $('#progressMonthChartModal').modal('show');
+
+    }
+</script>
+
+
+<style>
+    .modal-open {
+        padding-right: 0px !important;
+    }
+
+    .card .header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+        color: #111;
+    }
+</style>
+
+
+
+<input type="hidden" id="CurrentProgressYear" value="" />

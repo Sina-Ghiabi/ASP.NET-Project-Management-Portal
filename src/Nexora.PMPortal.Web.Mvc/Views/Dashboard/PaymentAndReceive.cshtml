@@ -1,0 +1,365 @@
+﻿@model List<Nexora.PMPortal.Financial.ReceiveAndPayment>
+@{
+    ViewData["Title"] = "Index";
+}
+@{
+    var years = Model.Select(a => new PersianDateTime(a.Year).Year).OrderBy(a => a).ToList();
+}
+@functions{
+    public string ToPersianAmount(decimal amount)
+    {
+        var input = string.Format("{0:#,###,###}", amount / 1000000);
+        if (input == "")
+        {
+            return "۰";
+        }
+        return makePersian(input);
+    }
+
+    public string ToPersian(decimal amount)
+    {
+        return makePersian(amount.ToString());
+    }
+
+    public string makePersian(string input)
+    {
+        Dictionary<char, char>
+    LettersDictionary = new Dictionary<char, char>
+    {
+        ['0'] = '۰',
+        ['1'] = '۱',
+        ['2'] = '۲',
+        ['3'] = '۳',
+        ['4'] = '۴',
+        ['5'] = '۵',
+        ['6'] = '۶',
+        ['7'] = '۷',
+        ['8'] = '۸',
+        ['9'] = '۹'
+    };
+        foreach (var item in input)
+        {
+            if (item != ',' && item != '-')
+            {
+                input = input.Replace(item, LettersDictionary[item]);
+            }
+        }
+        return input;
+    }
+
+
+
+
+}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+            @if (IsGranted("PmPortal.Dashboard.Projects"))
+            {
+                <a href="@Url.Action("Index","Home")" class="btn bg-blue-grey waves-effect no-radius dashboard-active" role="button">Projects Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Allocation"))
+            {
+                <a href="@Url.Action("Allocation","Home")" class="btn bg-indigo waves-effect no-radius" role="button">Allocation Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Managers"))
+            {
+                <a href="@Url.Action("Managers","Dashboard")" class="btn bg-teal waves-effect no-radius" role="button">Management Dashboard</a>
+            }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Annual and Cumulative Receipts and Payments </h2>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="@Url.Action("Index", "Home",new { id = ViewBag.Id})" class="btn btn-success btn-create m-r-20  pull-right">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            @foreach (var year in years)
+                            {
+                                <th>@makePersian(year.ToString())</th>
+                            }
+                            <th>Total Since Project Start</th>
+                        </tr>
+                    </thead>
+                    <tr style="background-color:#66ccff">
+                        <td>Total Periodic Receipts</td>
+                        @{
+                            decimal ReceiveTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @{
+                                    var item = Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year);
+                                    var yearTotalReceive = item.PreReceived + item.Statements + item.DepositRelease + item.WarrantyReduce + item.OtherReceipt + item.IndirectReceipt + item.OnAccountReceipt;
+                                    ReceiveTotal = ReceiveTotal + yearTotalReceive;
+                                }
+                                @ToPersianAmount(yearTotalReceive)
+                            </th>
+                        }
+                        <td>@ToPersianAmount(ReceiveTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Advance Payment</td>
+                        @{
+                            decimal PreReceivedTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).PreReceived)
+                                @{
+                                    PreReceivedTotal = PreReceivedTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).PreReceived;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(PreReceivedTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Progress Statement</td>
+                        @{
+                            decimal StatementsTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).Statements)
+                                @{
+                                    StatementsTotal = StatementsTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).Statements;
+                                }
+                            </th>
+
+                        }
+                        <td>@ToPersianAmount(StatementsTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Deposit Release</td>
+                        @{
+                            decimal DepositReleaseTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).DepositRelease)
+                                @{
+                                    DepositReleaseTotal = DepositReleaseTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).DepositRelease;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(DepositReleaseTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Warranty Reduction</td>
+                        @{
+                            decimal WarrantyReduceTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).WarrantyReduce)
+                                @{
+                                    WarrantyReduceTotal = WarrantyReduceTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).WarrantyReduce;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(WarrantyReduceTotal)</td>
+                    </tr>
+
+                    <tr>
+                        <td>Other</td>
+                        @{
+                            decimal OtherReceiptTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).OtherReceipt)
+                                @{
+                                    OtherReceiptTotal = OtherReceiptTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).OtherReceipt;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(OtherReceiptTotal)</td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Indirect Receipt</td>
+                        @{
+                            decimal IndirectReceiptTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).IndirectReceipt)
+                                @{
+                                    IndirectReceiptTotal = IndirectReceiptTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).IndirectReceipt;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(IndirectReceiptTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>On-Account Receipt</td>
+                        @{
+                            decimal OnAccountReceiptTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).OnAccountReceipt)
+                                @{
+                                    OnAccountReceiptTotal = OnAccountReceiptTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).OnAccountReceipt;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(OnAccountReceiptTotal)</td>
+                    </tr>
+                    <tr style="background-color:#ff8b8b">
+                        <td>Total Periodic Payments</td>
+                        @{
+                            decimal PaymentTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @{
+                                    var item = Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year);
+                                    var yearTotalPayment = item.ProjectPayments + item.WarrantyWithWage + item.SaleryWithTax + item.IndirecetPayment + item.ValueAddedTax;
+                                    PaymentTotal = PaymentTotal + yearTotalPayment;
+                                }
+                                @ToPersianAmount(yearTotalPayment)
+                            </th>
+                        }
+                        <td>@ToPersianAmount(PaymentTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Project Payments</td>
+                        @{
+                            decimal ProjectPaymentsTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).ProjectPayments)
+                                @{
+                                    ProjectPaymentsTotal = ProjectPaymentsTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).ProjectPayments;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(ProjectPaymentsTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Warranty and Fees</td>
+                        @{
+                            decimal WarrantyWithWageTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).WarrantyWithWage)
+                                @{
+                                    WarrantyWithWageTotal = WarrantyWithWageTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).WarrantyWithWage;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(WarrantyWithWageTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Salary, Insurance and Tax</td>
+                        @{
+                            decimal SaleryWithTaxTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).SaleryWithTax)
+                                @{
+                                    SaleryWithTaxTotal = SaleryWithTaxTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).SaleryWithTax;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(SaleryWithTaxTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Indirect Payment</td>
+                        @{
+                            decimal IndirecetPaymentTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th>
+                                @ToPersianAmount(Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).IndirecetPayment)
+                                @{
+                                    IndirecetPaymentTotal = IndirecetPaymentTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).IndirecetPayment;
+                                }
+                            </th>
+                        }
+                        <td>@ToPersianAmount(IndirecetPaymentTotal)</td>
+                    </tr>
+                    <tr>
+                        <td>Value Added Tax</td>
+                        @{
+                            decimal ValueAddedTaxTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th style="direction:ltr;">
+                                @{
+                                    var ValueAddedTax = Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).ValueAddedTax;
+                                    ValueAddedTaxTotal = ValueAddedTaxTotal + Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year).ValueAddedTax;
+                                }
+                                <span style="color:@(ValueAddedTax < 0 ? "red" : "");">@ToPersianAmount(ValueAddedTax)</span>
+                            </th>
+                        }
+                        <td><span style="color:@(ValueAddedTaxTotal < 0 ? "red" : "black");">@ToPersianAmount(ValueAddedTaxTotal)</span></td>
+                    </tr>
+                    <tr style="background-color:#a2d668">
+                        <td>Periodic Cash Balance</td>
+                        @{
+                            decimal BalanceTotal = 0;
+                        }
+                        @foreach (var year in years)
+                        {
+                            <th style="direction:ltr">
+                                @{
+                                    var item = Model.FirstOrDefault(a => new PersianDateTime(a.Year).Year == year);
+                                    var yearTotalPayment = item.ProjectPayments + item.WarrantyWithWage + item.SaleryWithTax + item.IndirecetPayment + item.ValueAddedTax;
+                                    var yearTotalReceive = item.PreReceived + item.Statements + item.DepositRelease + item.WarrantyReduce + item.OtherReceipt + item.IndirectReceipt + item.OnAccountReceipt;
+                                    var yearbalance = yearTotalReceive - yearTotalPayment;
+                                    BalanceTotal = BalanceTotal + yearbalance;
+                                }
+                                <span style="color:@(yearbalance < 0 ? "red" : "black");">@ToPersianAmount(yearbalance)</span>
+
+                            </th>
+                        }
+                        <td><span style="color:@(BalanceTotal < 0 ? "red" : "black"); font-weight:bold;">@ToPersianAmount(BalanceTotal)</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

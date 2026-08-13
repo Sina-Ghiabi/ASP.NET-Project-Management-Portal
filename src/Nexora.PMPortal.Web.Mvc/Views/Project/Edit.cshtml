@@ -1,0 +1,253 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ProjectViewModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Edit Project - @Model.Title
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("Edit", "Project", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Title</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Project Code</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Code, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Project Type</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.ProjectType, Html.GetEnumSelectList(typeof(ProjectType)), new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Project Status</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.ProjectStatus, Html.GetEnumSelectList(typeof(ProjectStatus)), new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Client</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Client, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Planning Manager</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PlannigManager, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Consultant</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Consultant, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Project Manager</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProjectManager, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Partners</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Partners, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Partnership Percentage</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PartnerShares, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Initial Amount (Rial)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.InitialContractAmount, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Extension Amount (Rial)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ExtensionContractAmount, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="">Currency Type</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.AmountCurrencyType, Html.GetEnumSelectList(typeof(CurrencyType)), "--- Select ---", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Initial Amount (Foreign Currency)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.InitialContractAmountInCurrency, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Extension Amount (Foreign Currency)</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ExtensionContractAmountInCurrency, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Project Location</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProjectSite, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Start Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Temporary Delivery Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.TemporaryDeliveryDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Final Delivery Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.FinalDeliveryDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Contract Duration</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ProjectContractPeriod, new { @class = "form-control", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Contract End Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ContractEndDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <label for="">Description</label>
+                    <div class="form-group">
+                        <div class="form-line">
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", placeholder = "" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for=""></label>
+                            <div class="form-group">
+                                @Html.CheckBoxFor(model => model.ShowInUsageReport, new { @class = "filled-in chk-col-blue", placeholder = "" })
+                                <label for="ShowInUsageReport">Show in Resources and Usage</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Display Order in Resources and Usage</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.UsageReportDisplayOrder, new { @class = "form-control", placeholder = "", autocomplete = "off" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <a href="@Url.Action("Index", "Project")" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

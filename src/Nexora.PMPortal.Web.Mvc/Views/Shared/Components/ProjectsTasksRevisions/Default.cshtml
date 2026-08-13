@@ -1,0 +1,249 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.ProjectsTasksRevisions.ProjectsTasksRevisionsViewModel
+@{
+    ViewBag.CurrentPageName = PageNames.ProjectsTasksRevision; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 id="Title" style="font-size:15px">
+                            Revisions
+                        </h2>
+                    </div>
+                 </div>
+                    <div class="row" style="margin-top:5px">
+                        <div class="col-md-4">
+                            <a id="Revision-Filter-Columns" class="btn btn-success m-t-15 m-r-15 waves-effect pull-left">Select Columns</a>
+                        </div>
+                        <div class="col-md-8">
+                            @if (IsGranted("PmPortal.ProjectsReports.ProjectsTasks.ProjectsTaskRevisions.Create"))
+                            {
+                                <button type="button" id="NewRevision" class="btn btn-info m-t-15 m-r-15 waves-effect pull-right">Add Revision</button>
+                            }
+                            @if (IsGranted("PmPortal.ProjectsReports.ProjectsTasks.ProjectsTaskRevisions.Create"))
+                            {
+                                <button type="button" id="NewRevisionFromKatibeh" class="btn btn-primary m-t-15 m-r-15 waves-effect pull-right">Add Revision From Katibeh</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="body" style="overflow-y:scroll">
+                <div class="k-rtl" style="display:table">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ProjectsTasksRevisionsViewModel>
+                    ().Name("MyGrid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.RevisionID).Title("RevisionID").Hidden();
+                        columns.Bound(c => c.TaskID).Title("TaskID").Hidden().Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.RevisionNumber).Title("Revision").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.TransmitalNumber).Title(".TR No").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.TransmitalDate).Title(".TR d").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.CommentSheetNumber).Title(".Comment Sheet No").Hidden().Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.CommentSheetDate).Title(".Comment Sheet d").Hidden().Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.ReplySheetNumber).Title(".Reply Sheet No").Hidden().Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.ReplySheetDate).Title(".Reply Sheet d").Hidden().Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.Status).Title("Status").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.Action).Title("Action").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Command(c => c.Custom("Edit").Click("onRevisionEdit").Visible("RevisionEditPermission")); //OnRevisionsEdit Function Is In ProjectsTasks Page
+                        columns.Command(c => { c.Destroy().Text("Delete").Visible("RevisionDestroyPermission"); });
+                    })
+                    .Pageable()
+                    .Navigatable()
+                    .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                    .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(10)
+                      .ServerOperation(true)
+                      .Model(model =>
+                      {
+                          model.Id(p => p.RevisionID);
+                      })
+                      .Read(read => read.Action("ProjectsTaskRevisionsTableData", "ProjectsDocumentations", new { TaskID = Model.TaskID }))
+                      .Destroy(destroy => destroy.Action("ProjectsTaskRevisionsDestroy", "ProjectsDocumentations"))
+                    )
+    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*AddRevisions Data For The Time When Users Wants To Turn Back From AddRevisions Page For That Document Revisions Page Opens*@
+<form id="Form-AddRevisions" action="/ProjectsDocumentations/AddProjectsTasksRevisions" method="post">
+    <input id="ProjectCode-AddRevision" type="hidden" name="ProjectCode" value="" />
+    <input id="TaskID-AddRevision" type="hidden" name="TaskID" value="" />
+    <input id="DocumentNumber-AddRevision" type="hidden" name="DocumentNumber" value="" />
+    <input id="DocumentTitle-AddRevision" type="hidden" name="DocumentTitle" value="" />
+</form>
+
+@*AddRevisionsFromKatibeh Data For The Time When Users Wants To Turn Back From AddRevisionsFromKatibeh Page Revisions Page For That Document Opens*@
+<form id="Form-AddRevisionsFromKatibeh" action="/ProjectsDocumentations/AddProjectsTasksRevisionsFromKatibeh" method="post">
+    <input id="ProjectCode-AddRevisionFromKatibeh" type="hidden" name="ProjectCode" value="" />
+    <input id="TaskID-AddRevisionFromKatibeh" type="hidden" name="TaskID" value="" />
+    <input id="DocumentNumber-AddRevisionFromKatibeh" type="hidden" name="DocumentNumber" value="" />
+    <input id="DocumentTitle-AddRevisionFromKatibeh" type="hidden" name="DocumentTitle" value="" />
+</form>
+
+@*ChosenColumns Data For The Time When Users Wants To Turn Back From ChosenColumns Page Revisions Page For That Document Opens*@
+<form id="Form-ChosenColumns" action="/ProjectsDocumentations/ProjectsTasksRevisionsEditChosenColumns" method="post">
+    <input id="TableID-ChosenColumns" type="hidden" name="TableID" value="" />
+    <input id="ProjectCode-ChosenColumns" type="hidden" name="ProjectCode" value="" />
+    <input id="TaskID-ChosenColumns" type="hidden" name="TaskID" value="" />
+    <input id="DocumentNumber-ChosenColumns" type="hidden" name="DocumentNumber" value="" />
+    <input id="DocumentTitle-ChosenColumns" type="hidden" name="DocumentTitle" value="" />
+</form>
+
+<script>
+    _telerik();
+</script>
+
+<script>
+    $("#Revision-Filter-Columns").click(function () {
+        $("#Form-ChosenColumns").submit();
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        //RevisionID
+        if ('@Html.Raw(ViewBag.Column1)' == "True" ) {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(0)
+        } else if('@Html.Raw(ViewBag.Column1)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(0)
+        }
+        //TaskID
+        if ('@Html.Raw(ViewBag.Column2)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(1)
+        } else if('@Html.Raw(ViewBag.Column2)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(1)
+        }
+        //RevisionNumber
+        if ('@Html.Raw(ViewBag.Column3).ToString()' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(2)
+        } else if('@Html.Raw(ViewBag.Column3).ToString()' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(2)
+        }
+        //Transmital Number
+        if ('@Html.Raw(ViewBag.Column4)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(3)
+        } else if('@Html.Raw(ViewBag.Column4)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(3)
+        }
+        //Transmital Date
+        if ('@Html.Raw(ViewBag.Column5)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(4)
+        } else if('@Html.Raw(ViewBag.Column5)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(4)
+        }
+        //CommentSheetNumber
+        if ('@Html.Raw(ViewBag.Column6)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(5)
+        } else if('@Html.Raw(ViewBag.Column6)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(5)
+        }
+        //CommentSheetDate
+        if ('@Html.Raw(ViewBag.Column7)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(6)
+        } else if('@Html.Raw(ViewBag.Column7)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(6)
+        }
+        //ReplySheetNumber
+        if ('@Html.Raw(ViewBag.Column8)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(7)
+        } else if('@Html.Raw(ViewBag.Column8)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(7)
+        }
+        //ReplySheetDate
+        if ('@Html.Raw(ViewBag.Column9)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(8)
+        } else if('@Html.Raw(ViewBag.Column9)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(8)
+        }
+        //Status
+        if ('@Html.Raw(ViewBag.Column10)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(9)
+        } else if('@Html.Raw(ViewBag.Column10)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(9)
+        }
+        //Action
+        if ('@Html.Raw(ViewBag.Column11)' == "True") {
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.showColumn(10)
+        } else if('@Html.Raw(ViewBag.Column11)' == "False"){
+            var Grid = $("#MyGrid").data("kendoGrid");
+            Grid.hideColumn(10)
+        }
+    });
+
+</script>
+
+<script>
+    //Send TaskID To ProjectsTasks.cshtml File
+    $(document).ready(function () {
+        var ProjectCode = '@Html.Raw(Model.ProjectCode)';
+        var TaskID = '@Html.Raw(Model.TaskID)';
+        var DocumentNumber = '@Html.Raw(Model.DocumentNumber)';
+        var DocumentTitle = '@Html.Raw(Model.DocumentTitle)';
+
+        //Pages Title
+        $("#Title").text('@Html.Raw(Model.DocumentTitle)');
+
+        //AddRevisions Form's Data - Return To Same Revision Page
+        $("#ProjectCode-AddRevision").val(ProjectCode);
+        $("#TaskID-AddRevision").val(TaskID);
+        $("#DocumentNumber-AddRevision").val(DocumentNumber);
+        $("#DocumentTitle-AddRevision").val(DocumentTitle);
+
+        //AddRevisionsFromKatibeh Form's Data - Return To Same Revision Page
+        $("#ProjectCode-AddRevisionFromKatibeh").val(ProjectCode);
+        $("#TaskID-AddRevisionFromKatibeh").val(TaskID);
+        $("#DocumentNumber-AddRevisionFromKatibeh").val(DocumentNumber);
+        $("#DocumentTitle-AddRevisionFromKatibeh").val(DocumentTitle);
+
+        //ChosenColumns Form's Data - Return To Same Revision Page
+        $("#TableID-ChosenColumns").val(7);
+        $("#ProjectCode-ChosenColumns").val(ProjectCode);
+        $("#TaskID-ChosenColumns").val(TaskID);
+        $("#DocumentNumber-ChosenColumns").val(DocumentNumber);
+        $("#DocumentTitle-ChosenColumns").val(DocumentTitle);
+
+        //Pass OnRevisionEdit Values To ProjectsTasks Inputs - Return To Same Revision Page
+        $("#ModalProjectCode").val(ProjectCode);
+        $("#ModalTaskID").val(TaskID);
+        $("#ModalDocumentNumber").val(DocumentNumber);
+        $("#ModalDocumentTitle").val(DocumentTitle);
+    });
+
+    $("#NewRevision").click(function () {
+        $("#Form-AddRevisions").submit();
+    });
+
+    $("#NewRevisionFromKatibeh").click(function () {
+        $("#Form-AddRevisionsFromKatibeh").submit();
+    });
+</script>
+

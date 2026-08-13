@@ -1,0 +1,421 @@
+﻿@{
+    ViewBag.CurrentPageName = PageNames.ReceiveBills; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Receive Bills
+                        </h2>
+                    </div>
+
+                    @if (IsGranted("PmPortal.Liquidity.ReceiveBills.Create"))
+                    {
+                        <div class="col-md-8">
+                            <a href="@Url.Action("AddReceiveBill","Financial")" class="btn btn-success btn-create pull-right">Register New Receipt</a>
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <div class="body">
+                <div class="row" style="margin-bottom:20px">
+                    <div class="col-md-3">
+                        @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", data_live_search = "true", multiple = "true", data_title = "-- Select Project --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("CurrencyId", Html.GetEnumSelectList(typeof(CurrencyType)), "-- Select Currency --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Currency --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("ReceiveBillTypeId", Html.GetEnumSelectList(typeof(ReceiveBillType)), "-- Select Type --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Type --" })
+                    </div>
+                    <div class="col-md-3">
+                        <select id="SortType" class="form-control">
+                            <option value="">-- Sort --</option>
+                            <option value="1">Registration Date (Descending)</option>
+                            <option value="2">Registration Date (Ascending)</option>
+                            <option value="3">Amount (Descending)</option>
+                            <option value="4">Amount (Ascending)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control simple-datepicker" id="FromDate" placeholder="From Date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control simple-datepicker" id="ToDate" placeholder="To Date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control" id="RefrenceId" placeholder="Document ID" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb0">
+                        <a href="javascript:;" id="Filter" class="btn btn-primary">Apply Filter</a>
+                        <a href="javascript:;" id="Excel" class="btn btn-success">Export to Excel</a>
+                        <a href="javascript:;" id="Filter-Columns" class="btn btn-info">Select Columns</a>
+                    </div>
+                </div>
+
+                <div class="k-rtl  table-responsive">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ReceiveBillViewModel>
+                        ()
+                        .Name("ReceiveBillsGrid")
+                        .Columns(columns =>
+                        {
+                        columns.Bound(c => c.Id).Title("#").Filterable(false).Width(45);
+                        columns.Bound(c => c.ProjectName).Title("Project").Width(130).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.Amount).Title("Requested Amount").Width(110).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.AssignedAmount).Title("Allocated").ClientTemplate("#=priceFormatter(data.AssignedAmount)#").Width(130).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.Remaining).Title("Balance").ClientTemplate("#=priceFormatter(data.Remaining)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.ReceiveBillType).Title("Receive Method").Width(120).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.CurrencyType).Title("Currency").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Bound(c => c.ReceiveDate).Title("Date").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                        columns.Command(c => c.Custom("Allocations List").Click("onTransactions").Visible("transactionPermission"));
+                        columns.Command(c => c.Custom("Edit").Click("onEdit").Visible("editPermission"));
+                        columns.Command(c => { c.Destroy().Text("Delete").Visible("destroyPermission"); });
+
+                        })
+                        .Pageable()
+                        //.Navigatable()
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(true)
+                        .Model(model =>
+                        {
+                        model.Id(p => p.Id);
+                        })
+                        .Events(events => events.RequestEnd("onMasterRequestEnd"))
+                        .Read(read => read.Action("ReceiveBillsRead", "Financial").Data("additionalInfo"))
+                        .Destroy(destroy => destroy.Action("ReceiveBillsDestroy", "Financial"))
+
+                        )
+                    )
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-12 col-md-3 col-sm-6 col-xs-12">
+                        <table class="table table-bordered sub-total">
+                            <tr>
+                                <td width="500">Total Receive Bills:</td>
+                                <td id="ResultTotalAmount" class="text-left">0</td>
+                                <td width="500">Total Allocations:</td>
+                                <td id="ResultAssignedTotalAmount" class="text-left">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addReceiveRequestTransactionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="defaultModalLabel">Allocations</h4>
+            </div>
+            <hr />
+            
+            <div class="modal-body">
+                <div id="ReceiveBillTransactionsWrapper">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#Filter").click(function () {
+        $('#ReceiveBillsGrid').data('kendoGrid').dataSource.page(1);
+        $('#ReceiveBillsGrid').data('kendoGrid').refresh();
+
+        $.ajax({
+            type: "GET",
+            url: "/Financial/ReceiveBillsFilterResult",
+            traditional: true,
+            data: {
+                projectId: $("#ProjectId").val(),
+                currencyId: $("#CurrencyId").val(),
+                receiveBillType: $("#ReceiveBillTypeId").val(),
+                from: $("#FromDate").val(),
+                to: $("#ToDate").val(),
+                sortType: $("#SortType").val(),
+                id: $("#RefrenceId").val()
+            },
+            success: function (response) {
+                $("#ResultTotalAmount").html(response.total);
+                $("#ResultAssignedTotalAmount").html(response.assignedTotal);
+
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+
+    });
+
+    function additionalInfo() {
+        return {
+            projectId: $("#ProjectId").val(),
+            currencyId: $("#CurrencyId").val(),
+            receiveBillType: $("#ReceiveBillTypeId").val(),
+            from: $("#FromDate").val(),
+            to: $("#ToDate").val(),
+            sortType: $("#SortType").val(),
+            id: $("#RefrenceId").val()
+        };
+    }
+
+    $("#Excel").click(function () {
+        $('#ReceiveBillsGrid').data('kendoGrid').dataSource.page(1);
+        $('#ReceiveBillsGrid').data('kendoGrid').refresh();
+        var url = "projectId=" + $("#ProjectId").val() +
+            "&currencyId=" + $("#CurrencyId").val() +
+            "&receiveBillType=" + $("#ReceiveBillTypeId").val() +
+            "&from=" + $("#FromDate").val() +
+            "&to=" + $("#ToDate").val() +
+            "&sortType=" + $("#SortType").val() +
+            "&id=" + $("#RefrenceId").val();
+
+        window.location = "/Financial/ReceiveBillsExcel?" + url;
+    });
+
+
+    function transactionPermission() {
+        return abp.auth.isGranted("PmPortal.Liquidity.ReceiveBills.Transactions");
+    }
+
+    function editPermission() {
+        return abp.auth.isGranted("PmPortal.Liquidity.ReceiveBills.Edit");
+    }
+
+    function destroyPermission() {
+        return abp.auth.isGranted("PmPortal.Liquidity.ReceiveBills.Delete");
+    }
+
+    function onEdit(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/Financial/EditReceiveBill/" + dataItem.id;
+    }
+
+    function onTransactions(e) {
+        e.preventDefault();
+        _telerik();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            type: "GET",
+            url: "/Financial/ReceiveBillTransaction?id=" + dataItem.id,
+            success: function (response) {
+                var dvItems = $("#ReceiveBillTransactionsWrapper");
+                dvItems.empty();
+                dvItems.html(response);
+                $('#addReceiveRequestTransactionModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+
+
+    }
+
+    function onRequestEnd(e) {
+        var operationType = e.type;
+
+        if (operationType == "destroy") {
+            $('#ReceiveBillsGrid').data('kendoGrid').dataSource.read();
+            $('#ReceiveBillsGrid').data('kendoGrid').refresh();
+        }
+    }
+
+
+    function onTransactionEdit(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        console.log(dataItem);
+        $("#modal_project_title").html("Project: " + dataItem.ProjectName);
+        $("#modal_amount").val(dataItem.Amount);
+        $("#modal_date").val(dataItem.CreationTime);
+        $("#modal_id").val(dataItem.Id);
+        $('#editItem').modal('show');
+    }
+
+
+</script>
+
+<script>
+    function onMasterRequestEnd(e) {
+        var operationType = e.type;
+        if (operationType == "destroy") {
+            if (e.response.errors.DependentRecord) {
+                swal("System Error", "This item cannot be deleted until all of its allocations are deleted!", "error");
+                var grid = $("#ReceiveBillsGrid").data("kendoGrid");
+                grid.cancelChanges();
+            }
+        }
+    }
+</script>
+
+
+
+<div class="modal fade" id="editItem" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editTransactionForm" asp-action="EditTransaction" asp-controller="Financial" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal_project_title"></h4>
+                </div>
+                <hr />
+                <input type="hidden" id="modal_id" name="modal_id" value="" />
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="">Amount</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" class="form-control" id="modal_amount" name="modal_amount" data-inputmask="'alias': 'decimal', 'groupSeparator': ','" inputmode="numeric" required="required" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label for="">Date</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" class="form-control simple-datepicker" id="modal_date" name="modal_date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#editTransactionForm").submit(function (e) {
+        e.preventDefault();
+        if ($(this).valid()) {
+            var formAction = $(this).attr("action");
+            var fdata = new FormData(this);
+            $.ajax({
+                type: 'post',
+                url: formAction,
+                data: fdata,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                if (result.status === "success") {
+                    $('#editItem').modal('hide');
+                    $('#editTransactionForm').trigger("reset");
+                    $('#ReceiveBillTransactionGrid').data('kendoGrid').dataSource.read();
+                    $('#ReceiveBillTransactionGrid').data('kendoGrid').refresh();
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    $("#Filter-Columns").click(function () {
+        window.location.href = "/Financial/ReceiveBills_EditChosenColumns" + "?TableID=" + 2;
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        //Requested Amount
+        if ('@Html.Raw(ViewBag.Column1)' == "True" ) {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(2)
+        } else if ('@Html.Raw(ViewBag.Column1)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(2)
+        }
+        //Allocated
+        if ('@Html.Raw(ViewBag.Column2)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(3)
+        } else if('@Html.Raw(ViewBag.Column2)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(3)
+        }
+        //Balance
+        if ('@Html.Raw(ViewBag.Column3)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(4)
+        } else if('@Html.Raw(ViewBag.Column3)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(4)
+        }
+        //Receive Method
+        if ('@Html.Raw(ViewBag.Column4)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(5)
+        } else if('@Html.Raw(ViewBag.Column4)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(5)
+        }
+        //Currency
+        if ('@Html.Raw(ViewBag.Column5)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(6)
+        } else if('@Html.Raw(ViewBag.Column5)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(6)
+        }
+        //Date
+        if ('@Html.Raw(ViewBag.Column6)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(7)
+        } else if('@Html.Raw(ViewBag.Column6)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(7)
+        }
+        //Allocations List
+        if ('@Html.Raw(ViewBag.Column7)' == "True") {
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.showColumn(8)
+        } else if('@Html.Raw(ViewBag.Column7)' == "False"){
+            var Grid = $("#ReceiveBillsGrid").data("kendoGrid");
+            Grid.hideColumn(8)
+        }
+    });
+
+</script>
+
+    <style>
+        .mb0 {
+            margin-bottom: 0 !important;
+        }
+    </style>

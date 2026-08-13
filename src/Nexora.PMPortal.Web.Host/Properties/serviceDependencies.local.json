@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "signalr1": {
+      "type": "signalr",
+      "suggestion": "true",
+      "ignored": "true"
+    },
+    "mssql1": {
+      "type": "mssql.onprem",
+      "connectionId": "Default",
+      "secretStore": "LocalSecretsFile"
+    }
+  }
+}

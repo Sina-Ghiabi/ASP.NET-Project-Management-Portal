@@ -1,0 +1,121 @@
+﻿@using Nexora.PMPortal.Web.Startup
+
+@{
+    ViewBag.CurrentPageName = PageNames.CostBenefit; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Sales and Profit/Loss
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Create","CostBenefit")" class="btn btn-primary btn-create  pull-right">Add New Item</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                @*<div class="row">
+                    <div class="col-md-12">
+                        @ViewBag.Error
+                        <form id="" asp-action="Index" asp-controller="CostBenefit" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="col-md-6">
+                                <label for="">Related File</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input id="fileExcel" name="fileExcel" type="file" class="m-t-10" />
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                        </form>
+                    </div>
+                </div>*@
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ChartForm.CostBenefitViewModel>()
+                                                                   .Name("Grid")
+                                                                   .Columns(columns =>
+                                                                   {
+                                                                       columns.Bound(c => c.Id).Filterable(false).Title("#").Width(50);
+                                                                       columns.Bound(c => c.ProjectName).Title("Project").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(200);
+                                                                       columns.Bound(c => c.Year).Title("Year").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(100);
+                                                                       columns.Bound(c => c.CostBenefitPeriod).Title("Period").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       columns.Bound(c => c.ApprovedSales).Title("Approved Sales").ClientTemplate("#=priceFormatter(data.ApprovedSales)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       columns.Bound(c => c.RecycleSales).Title("Recycle Sales").ClientTemplate("#=priceFormatter(data.RecycleSales)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       columns.Bound(c => c.AllCost).Title("Operational Sales").ClientTemplate("#=priceFormatter(data.AllCost)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       //columns.Bound(c => c.Profit).Title("Profit").ClientTemplate("#=priceFormatter(data.Profit)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       //columns.Bound(c => c.InflationRate).Title("Inflation Rate").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+                                                                       columns.Bound(c => c.GrossProfit).Title("Cumulative Gross Profit").ClientTemplate("#=priceFormatter(data.GrossProfit)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+
+                                                                       //columns.Command(c => c.Custom("Details").Click("onDetails").Visible("detailsPermission")).Width(75);
+                                                                       columns.Command(c => c.Custom("Edit").Click("onEdit")).Width(75);
+                                                                       columns.Command(c => { c.Destroy().Text("Delete"); }).Width(75);
+                                                                   })
+                                                                   .Pageable()
+                                                                   .Navigatable()
+                                                                   .Sortable()
+                                                                   .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                                   .Scrollable()
+                                                                   .Events(events => events.DataBound("onDataBound"))
+                                                                   .DataSource(dataSource => dataSource
+                                                                       .Ajax()
+                                                                       .PageSize(10)
+
+                                                                       .ServerOperation(true)
+                                                                       .Model(model =>
+                                                                       {
+                                                                           model.Id(p => p.Id);
+                                                                       })
+                                                                       .Read(read => read.Action("CostBenefitRead", "CostBenefit"))
+                                                                       .Destroy(destroy => destroy.Action("CostBenefitDestroy", "CostBenefit"))
+                                                                   )
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="LastPageId" value="@ViewBag.LastPageValue" />
+
+
+<script>
+    var pageSet = false;
+    function onDataBound(arg) {
+        if (!pageSet) {
+            $('#Grid').data().kendoGrid.dataSource.page($("#LastPageId").val());
+            pageSet = true;
+        }
+    }
+    function onEdit(e) {
+        var pageId = $("#Grid").data("kendoGrid").dataSource.page();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/CostBenefit/Edit/" + dataItem.id + "?lastPage=" + pageId;
+    }
+
+    //function onDetails(e) {
+    //    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    //    window.location.href = "/CostBenefit/Details/" + dataItem.id;
+    //}
+
+    //function detailsPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Details");
+    //}
+
+    //function editPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Edit");
+    //}
+
+    //function destroyPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Delete");
+    //}
+</script>

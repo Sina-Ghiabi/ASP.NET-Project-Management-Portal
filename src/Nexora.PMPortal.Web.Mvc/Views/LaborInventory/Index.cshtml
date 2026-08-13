@@ -1,0 +1,113 @@
+﻿@using Nexora.PMPortal.Web.Startup
+
+@{
+    ViewBag.CurrentPageName = PageNames.LaborInventory; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Labor Inventory
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Create","LaborInventory")" class="btn btn-primary btn-create  pull-right">Add New Item</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                @*<div class="row">
+                    <div class="col-md-12">
+                        @ViewBag.Error
+                        <form id="" asp-action="Index" asp-controller="LaborInventory" method="post" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="col-md-6">
+                                <label for="">Related File</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <input id="fileExcel" name="fileExcel" type="file" class="m-t-10" />
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                        </form>
+                    </div>
+                </div>*@
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ChartForm.LaborInventoryViewModel>()
+                                                                   .Name("Grid")
+                                                                   .Columns(columns =>
+                                                                   {
+                                                                       columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                       columns.Bound(c => c.ProjectName).Title("Project").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                                       columns.Bound(c => c.Year).Title("Year").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(100);
+
+                                                                       //columns.Command(c => c.Custom("Details").Click("onDetails").Visible("detailsPermission")).Width(75);
+                                                                       columns.Command(c => c.Custom("Edit").Click("onEdit")).Width(75);
+                                                                       columns.Command(c => { c.Destroy().Text("Delete"); }).Width(75);
+                                                                   })
+                                                                   .Pageable()
+                                                                   .Navigatable()
+                                                                   .Sortable()
+                                                                   .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                                   .Scrollable()
+                                                                   .Events(events => events.DataBound("onDataBound"))
+                                                                   .DataSource(dataSource => dataSource
+                                                                       .Ajax()
+                                                                       .PageSize(10)
+                                                                       .ServerOperation(true)
+                                                                       .Model(model =>
+                                                                       {
+                                                                           model.Id(p => p.Id);
+                                                                       })
+                                                                       .Read(read => read.Action("LaborInventoryRead", "LaborInventory"))
+                                                                       .Destroy(destroy => destroy.Action("LaborInventoryDestroy", "LaborInventory"))
+                                                                   )
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" id="LastPageId" value="@ViewBag.LastPageValue" />
+
+
+<script>
+    var pageSet = false;
+    function onDataBound(arg) {
+        if (!pageSet) {
+            $('#Grid').data().kendoGrid.dataSource.page($("#LastPageId").val());
+            pageSet = true;
+        }
+    }
+    function onEdit(e) {
+        var pageId = $("#Grid").data("kendoGrid").dataSource.page();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/LaborInventory/Edit/" + dataItem.id + "?lastPage=" + pageId;
+    }
+
+    //function onDetails(e) {
+    //    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    //    window.location.href = "/LaborInventory/Details/" + dataItem.id;
+    //}
+
+    //function detailsPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Details");
+    //}
+
+    //function editPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Edit");
+    //}
+
+    //function destroyPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Delete");
+    //}
+</script>

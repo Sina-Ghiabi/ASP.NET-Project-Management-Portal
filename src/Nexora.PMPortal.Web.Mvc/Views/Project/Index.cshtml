@@ -1,0 +1,88 @@
+﻿@using Nexora.PMPortal.Web.Startup
+
+@*@{
+        ViewBag.CurrentPageName = PageNames.Projects; // The menu item will be active for this page.
+    }*@
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Projects
+                        </h2>
+                    </div>
+                    @if (IsGranted("PmPortal.Project.Create"))
+                    {
+                        <div class="col-md-8">
+                            <a href="@Url.Action("Create","Project")" class="btn btn-primary btn-create  pull-right">Add New Project</a>
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ProjectViewModel>()
+                                                                   .Name("Grid")
+                                                                   .Columns(columns =>
+                                                                   {
+                                                                       columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                       columns.Bound(c => c.Title).Title("Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                                                                       columns.Bound(c => c.ProjectType).Title("Type").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(100);
+                                                                       columns.Bound(c => c.ProjectStatus).Title("Status").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       columns.Bound(c => c.FriendlyCreationTime).Title("Registration Date").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+                                                                       columns.Command(c => c.Custom("Details").Click("onDetails").Visible("detailsPermission")).Width(75);
+                                                                       columns.Command(c => c.Custom("Edit").Click("onEdit").Visible("editPermission")).Width(75);
+                                                                       columns.Command(c => { c.Destroy().Text("Delete").Visible("destroyPermission"); }).Width(75);
+                                                                   })
+                                                                   .Pageable()
+                                                                   .Navigatable()
+                                                                   .Sortable()
+                                                                   .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                                   .Scrollable()
+                                                                   .DataSource(dataSource => dataSource
+                                                                       .Ajax()
+                                                                       .PageSize(10)
+                                                                       .ServerOperation(false)
+                                                                       .Model(model =>
+                                                                       {
+                                                                           model.Id(p => p.Id);
+                                                                       })
+                                                                       .Read(read => read.Action("ProjectRead", "Project"))
+                                                                       .Destroy(destroy => destroy.Action("ProjectDestroy", "Project"))
+                                                                   )
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function onEdit(e){
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/Project/Edit/" + dataItem.id;
+    }
+
+     function onDetails(e){
+         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+         window.location.href = "/Project/Details/" + dataItem.id;
+    }
+
+    function detailsPermission() {
+        return abp.auth.isGranted("PmPortal.Project.Details");
+    }
+
+    function editPermission() {
+        return abp.auth.isGranted("PmPortal.Project.Edit");
+    }
+
+    function destroyPermission() {
+        return abp.auth.isGranted("PmPortal.Project.Delete");
+    }
+</script>

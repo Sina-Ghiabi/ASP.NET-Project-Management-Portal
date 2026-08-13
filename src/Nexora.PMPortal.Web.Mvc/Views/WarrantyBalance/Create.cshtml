@@ -1,0 +1,83 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ChartForm.WarrantyBalanceViewModel
+@{
+    ViewData["Title"] = "Create";
+    ViewBag.CurrentPageName = PageNames.WarrantyBalance; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Add New Warranty
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("Create", "WarrantyBalance", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Project</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", required = "required", data_live_search = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Year</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Year, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Obligation Execution</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ObligationExecution, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Advance Payment</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.PreReceived, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Guarantee Deduction</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.GuaranteeDeduction, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <a href="@Url.Action("Index", "WarrantyBalance")" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

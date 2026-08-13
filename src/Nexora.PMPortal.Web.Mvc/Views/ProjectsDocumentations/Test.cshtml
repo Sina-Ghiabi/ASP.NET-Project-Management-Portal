@@ -1,0 +1,113 @@
+﻿<html>
+<body style="height:2000px">
+    <div>
+        @if (IsGranted("PmPortal.Project.ProjectGallery"))
+        {
+        <div role="tabpanel" class="tab-pane p-t-10" id="settings_with_icon_title1">
+
+            <div id="lightgallery" class="list-unstyled row clearfix">
+                Hello
+            </div>
+
+            <style>
+                .lg-inner {
+                    direction: ltr !important;
+                }
+
+                #lightGallery-Gallery .thumb_cont {
+                    direction: ltr;
+                }
+            </style>
+
+        </div>
+        }
+    </div>
+</body>
+</html>
+
+
+
+<script>
+
+    $('#GalleryButton').click(function () {
+
+        ScrollEvent("ON");
+
+    });
+
+    $('#FinancialStatementButton,#BasicInfoButton,#ReportsButton,#PlansButton,#FinancialButton,#AddPictureButton').click(function () {
+
+        ScrollEvent("OFF");
+
+    });
+
+    var Start = 0;
+    var End = 30;
+    var List = []; //If Data Exists in List Do Nothing
+
+    function ScrollEvent(Event) {
+
+
+        if (Event == "ON") {
+
+            $(window).on('DOMMouseScroll mousewheel', function (event) {
+
+                if (event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0) {
+
+                    var ScrollFromTop = $(document).scrollTop();
+
+                    if (ScrollFromTop % 300 == 0) {
+
+                        if ($.inArray(ScrollFromTop, List) == -1) {
+
+                            //Didn't Find ScrollPoint In List
+
+                            List.push(ScrollFromTop); //Add Point To List If Scroll Reached That Point - Then Check If Already Reached That Point To Prevent Loading Pictures Again
+                            this.alert("This ScrollPoint Added : " + ScrollFromTop)
+
+                            //this.alert(Start);
+                            //this.alert(End);
+
+                            $.ajax({
+                                type: "POST",
+                                data: { 'ID': 17, 'Start': Start, 'End': End },
+                                url: "/Project/ProjectMediaAjax",
+                                dataType: 'JSON',
+                                success: function (response) {
+                                    for (var Index = 0; Index <= Object.keys(response).length; Index++) {
+
+                                        var Picture_Structure = '<div class="col-lg-2 col-md-2 col-sm-6 col-xs-6" data-src="' + response[Index].ImageUrl + '" data-sub-html="<h2> ' + response[Index].SubmitDate + ' - ' + response[Index].Title + '</h2>">' +
+                                            '<a data-src="' + response[Index].ImageUrl + '">' +
+                                            '<img class="img-responsive thumbnail" src="' + response[Index].ImageUrl + '">' +
+                                            '</a>' +
+                                            '<span class="gallery-img-date">' + response[Index].SubmitDate + '</span>' +
+                                            '</div>';
+
+                                        $('#lightgallery').append(Picture_Structure);
+                                    }
+                                },
+                                failure: function () {
+                                    alert("Noting Returned");
+                                }
+                            });
+
+                            Start = Start + 15;
+                            End = End + 15;
+
+                        } else {
+
+                            this.alert("This ScrollPoint Existed : " + ScrollFromTop);
+
+                        }
+                    }
+                }
+            })
+
+        } else if (Event == "OFF") {
+
+            $(window).off('DOMMouseScroll mousewheel'); //It Turns Off The  $(window).on('DOMMouseScroll mousewheel', function (event) { ... } EventHandler At Top After It Clicked On Any Other Button Except GalleryButton
+
+        }
+    }
+
+</script>

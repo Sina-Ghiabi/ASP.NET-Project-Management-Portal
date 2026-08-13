@@ -1,0 +1,73 @@
+﻿@using Nexora.PMPortal.Web.Startup
+@model Nexora.PMPortal.Web.Models.Roles.RoleListViewModel
+@{
+    ViewBag.CurrentPageName = PageNames.Roles; // The menu item will be active for this page.
+}
+@section scripts
+    {
+    <environment names="Development">
+        <script src="~/view-resources/Views/Roles/Index.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/view-resources/Views/Roles/Index.min.js" asp-append-version="true"></script>
+    </environment>
+}
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Roles
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Create","Roles")" class="btn btn-primary btn-create  pull-right">Add New Role</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Roles.Dto.RoleListDto>()
+                                                                     .Name("Grid")
+                                                                     .Columns(columns =>
+                                                                     {
+                                                                         columns.Bound(c => c.Id).Title("#").Width(40);
+                                                                         columns.Bound(c => c.Name).Title("Name");
+                                                                         columns.Bound(c => c.DisplayName).Title("Display Name");
+                                                                         columns.Bound(c => c.IsDefault).Title("Default");
+                                                                         columns.Bound(c => c.CreationTime).Title("Creation Date");
+                                                                         columns.Command(c => c.Custom("Edit").Click("onEdit")).Width(115);
+                                                                         columns.Command(c => { c.Destroy().Text("Delete"); }).Width(165);
+                                                                     })
+                                                                     .Pageable()
+                                                                     .Navigatable()
+                                                                     .Sortable()
+                                                                     .Scrollable()
+                                                                     .DataSource(dataSource => dataSource
+                                                                         .Ajax()
+                                                                         .PageSize(20)
+                                                                         .ServerOperation(false)
+                                                                         .Model(model =>
+                                                                         {
+                                                                             model.Id(p => p.Id);
+                                                                         })
+                                                                         .Read(read => read.Action("RoleRead", "Roles"))
+                                                                         .Destroy(destroy => destroy.Action("RoleDestroy", "Roles"))
+                                                                     )
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function onEdit(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/Roles/Edit/" + dataItem.id;
+    }
+
+</script>

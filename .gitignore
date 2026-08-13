@@ -1,0 +1,27 @@
+## .NET
+**/bin/
+**/obj/
+**/.vs/
+**/App_Data/Logs/
+**/Logs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Publish / deployment artifacts (machine- and environment-specific)
+**/Properties/PublishProfiles/*.pubxml
+**/Properties/PublishProfiles/*.pubxml.user
+
+## Local secrets / environment overrides - never commit real credentials
+**/appsettings.*.local.json
+**/appsettings.Development.json
+
+## Runtime user uploads - generated at runtime, not source
+**/wwwroot/Uploads/
+**/wwwroot/Excel/**/*.xlsx
+
+## Editor / OS
+.idea/
+*.DS_Store
+Thumbs.db

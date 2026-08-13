@@ -1,0 +1,124 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.ReceiveBillTransaction.ReceiveBillTransactionViewModel
+
+<div class="row">
+    <input type="hidden" id="t_paymentid" name="t_paymentid" value="@Model.Id" />
+
+    <div class="col-md-6">
+        <label for="">Project</label>
+        <div class="form-group">
+            <div class="form-line">
+                @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control project_input", required = "required" ,data_live_search = "true" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="">Amount</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control" id="t_amount" name="t_amount" data-inputmask="'alias': 'decimal', 'groupSeparator': ','" inputmode="numeric" required="required" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="">Description</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control" id="t_desc" name="t_desc" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label for="">Date</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control simple-datepicker" id="t_date" name="t_date" value="@Model.TodayDate" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <label for=""></label>
+        <div class="form-group">
+            <a href="javascript:;" id="add_payment_transaction" class="btn btn-success m-t-15 waves-effect pull-right">Assign to Project</a>
+        </div>
+    </div>
+</div>
+
+<div class="k-rtl">
+    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.TransactionViewModel>
+                    ().Name("ReceiveBillTransactionGrid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Id).Title("#").Width(30);
+                        columns.Bound(c => c.ProjectName).Title("Project").Width(140);
+                        columns.Bound(c => c.Amount).ClientTemplate("#=priceFormatter(data.Amount)#").Title("Amount").Width(120);
+                        columns.Bound(c => c.CurrencyType).Title("Currency").Width(100);
+                        columns.Bound(c => c.Description).Title("Description");
+                        columns.Bound(c => c.CreationTime).Title("Date").Width(100);
+                        columns.Command(c => c.Custom("Edit").Click("onTransactionEdit")).Width(85);
+                        columns.Command(command => { command.Destroy().Text("Delete"); }).Width(90);
+                    })
+                    .Navigatable()
+                    .Sortable()
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .PageSize(300)
+                    .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.Id);
+                    })
+                    .Events(events => events.RequestEnd("onRequestEnd"))
+                    .Read(read => read.Action("ReceiveBillTransactionRead", "Financial", new { id = Model.Id }))
+                    .Destroy(destroy => destroy.Action("ReceiveBillTransactionDestroy", "Financial"))
+                    .Update(update => update.Action("ReceiveBillTransactionUpdate", "Financial"))
+                    )
+    )
+</div>
+
+<script>
+    $("#add_payment_transaction").click(function(){
+        var amount_value = $("#t_amount").val();
+        var desc_value = $("#t_desc").val();
+        var id_value = $("#t_paymentid").val() * 1;
+        var date_value = $("#t_date").val();
+        var projectId_value = $(".project_input").val();
+        if(amount_value && projectId_value){
+          $.ajax({
+                type: 'post',
+                url: "/Financial/AddReceiveBillTransaction",
+                data: {"amount" : amount_value, "description" : desc_value, "recevieBillId" : id_value, "projectId" : projectId_value, "date" : date_value},
+                enctype: 'multipart/form-data',
+            }).done(function (result) {
+                if (result.status === "success") {
+                    $("#t_amount").val(null);
+                    $("#t_desc").val(null);
+                    $("#t_date").val(null);
+                    $('#ReceiveBillTransactionGrid').data('kendoGrid').dataSource.read();
+                    $('#ReceiveBillTransactionGrid').data('kendoGrid').refresh();
+                    $('#ReceiveBillsGrid').data('kendoGrid').dataSource.read();
+                    $('#ReceiveBillsGrid').data('kendoGrid').refresh();
+                } else {
+                    alert(result.message);
+                }
+            });
+    }
+         else{
+            alert("Entering the amount and selecting a project for allocation is required!");
+         }
+    });
+
+
+    $(document).ready(function () {
+        $(":input").inputmask();
+
+        $(".simple-datepicker").persianDatepicker({
+            initialValue: false,
+            format: 'YYYY/MM/DD',
+            autoClose: true
+        });
+    });
+
+
+</script>
+
+

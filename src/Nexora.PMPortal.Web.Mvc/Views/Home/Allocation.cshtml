@@ -1,0 +1,341 @@
+﻿@using Nexora.PMPortal.Web.Startup
+@model Nexora.PMPortal.Web.ViewModels.IndexViewModel
+@{
+    ViewBag.CurrentPageName = PageNames.Home; // The menu item will be active for this page.
+}
+@section styles {
+    <link href="~/lib/morris.js/morris.css" rel="stylesheet" asp-append-version="true" />
+}
+@section scripts
+{
+    <environment names="Development">
+        <script src="~/lib/jquery-countTo/jquery.countTo.js" asp-append-version="true"></script>
+        <script src="~/lib/raphael/raphael.js" asp-append-version="true"></script>
+        <script src="~/lib/morris.js/morris.js" asp-append-version="true"></script>
+        <script src="~/lib/chart.js/dist/Chart.bundle.js" asp-append-version="true"></script>
+        <script src="~/lib/Flot/jquery.flot.js" asp-append-version="true"></script>
+        <script src="~/lib/Flot/jquery.flot.resize.js" asp-append-version="true"></script>
+        <script src="~/lib/Flot/jquery.flot.pie.js" asp-append-version="true"></script>
+        <script src="~/lib/Flot/jquery.flot.categories.js" asp-append-version="true"></script>
+        <script src="~/lib/Flot/jquery.flot.time.js" asp-append-version="true"></script>
+        <script src="~/lib/jquery-sparkline/dist/jquery.sparkline.js" asp-append-version="true"></script>
+        <script src="~/view-resources/Views/Home/Index.js" asp-append-version="true"></script>
+    </environment>
+
+    <environment names="Staging,Production">
+        <script src="~/view-resources/Views/_Bundles/home-index.min.js" asp-append-version="true"></script>
+    </environment>
+
+}
+
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+            @if (IsGranted("PmPortal.Dashboard.Projects"))
+            {
+                <a href="@Url.Action("Index","Home")" class="btn bg-blue-grey waves-effect no-radius" role="button">Projects Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Allocation"))
+            {
+                <a href="@Url.Action("Allocation","Home")" class="btn bg-indigo waves-effect no-radius dashboard-active" role="button">Allocation Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Managers"))
+            {
+                <a href="@Url.Action("Managers","Dashboard")" class="btn bg-teal waves-effect no-radius" role="button">Management Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.ProjectsDocumentations"))
+            {
+                <a href="@Url.Action("ProjectsDocumentations","Dashboard")" class="btn bg-primary waves-effect no-radius" role="button">Engineering Dashboard</a>
+            }
+        </div>
+    </div>
+</div>
+
+@if (IsGranted("PmPortal.Dashboard.Allocation"))
+{
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="p-t-5">Dashboard (figures in million Rials)</h2>
+                        </div>
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.ReportYear, Html.GetEnumSelectList(typeof(ReportYear)), new { id = "box-Year", @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", multiple = "true" })
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="row clearfix  m-b-0">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                            <div class="info-box bg-light-blue hover-expand-effect mb0">
+                                <div class="icon">
+                                    <i class="material-icons">playlist_add_check</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">Total Receipts</div>
+                                    <div class="number" id="projectReceiveAmounts">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                            <div class="info-box bg-pink hover-expand-effect mb0">
+                                <div class="icon">
+                                    <i class="material-icons">playlist_add_check</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">Total Payments</div>
+                                    <div class="number" id="projectPaymentAmounts">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                            <div class="info-box bg-green hover-expand-effect mb0">
+                                <div class="icon">
+                                    <i class="material-icons">playlist_add_check</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">Cash Balance</div>
+                                    <div class="number" id="balanceAmounts" style="direction:ltr; text-align:right;">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 mb0">
+                            <div class="info-box bg-orange hover-expand-effect mb0">
+                                <div class="icon">
+                                    <i class="material-icons">playlist_add_check</i>
+                                </div>
+                                <div class="content">
+                                    <div class="text">My Projects</div>
+                                    <div class="number">@Model.MyProjectCount</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="p-t-5">Receipts and Payments</h2>
+                        </div>
+                        <div class="col-md-3">
+                            @Html.DropDownListFor(model => model.ReportYear, Html.GetEnumSelectList(typeof(ReportYear)), new { @class = "form-control" })
+                        </div>
+                        <div class="col-md-3">
+                            @Html.DropDownList("Month", Html.GetEnumSelectList(typeof(ReportMonth)), new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="chart-container" style="position: relative; height:auto;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    @*<canvas id="myChart" height="250"></canvas>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .mb0 {
+        margin-bottom: 0 !important;
+    }
+</style>
+
+
+
+
+<script>
+
+    $("#Currency").change(function () {
+        getData($("#ReportYear").val(), $("#Currency").val(), $("#Month").val());
+    });
+
+    $("#ReportYear").change(function () {
+        getData($("#ReportYear").val(), $("#Currency").val(), $("#Month").val());
+    });
+
+    $("#Month").change(function () {
+        getData($("#ReportYear").val(), $("#Currency").val(), $("#Month").val());
+    });
+
+    $(document).ready(function () {
+        getData($("#ReportYear").val(), $("#Currency").val(), $("#Month").val());
+    });
+
+    var ctx = document.getElementById('myChart');
+    var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: {
+            labels: [],
+            datasets: [{
+                label:'Receipts',
+                data: [],
+                backgroundColor: 'rgba(0, 188, 212, 0.8)'
+            },
+                {
+                label: 'Payments',
+                data: [],
+                backgroundColor: 'rgba(233, 30, 99, 0.8)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+
+            tooltips: {
+                fontFamily: 'Shabnam',
+                callbacks: {
+                    label: function (ToolTipItem, data) {
+
+                        if (ToolTipItem.datasetIndex === 0) {
+                            var Received = data.datasets[0].data[ToolTipItem.index];
+                            Received = Received.toString();
+                            Received = Received.split(/(?=(?:...)*$)/);
+                            Received = Received.join(',');
+                            Received_Result = "Receipts:" + Received + "";
+
+                            return Received_Result;
+                        }
+                        if (ToolTipItem.datasetIndex === 1) {
+                            var Payment = data.datasets[1].data[ToolTipItem.index];
+                            Payment = Payment.toString();
+                            Payment = Payment.split(/(?=(?:...)*$)/);
+                            Payment = Payment.join(',');
+                            Payment_Result = "Payments:" + Payment + "";
+
+                            return Payment_Result;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        fontSize: 12,
+                        fontFamily: 'shabnam',
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontSize: 12,
+                        fontFamily: 'shabnam',
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            }
+        }
+    });
+
+    //myChart.defaults.global.defaultFontColor = 'red';
+
+    // logic to get new data
+    var getData = function (year, currencyId, month) {
+
+        $.ajax({
+            url: '/Home/GetProjectChartDatas',
+            data: { "year": year, "month": month, "currencyId": currencyId },
+            success: function (data) {
+                // process your data to pull out what you plan to use to update the chart
+                // e.g. new label and a new data point
+                myChart.data.labels = [];
+                // add new label and data point to chart's underlying data structures
+                data.projects.forEach(function (element) {
+                    myChart.data.labels.push(element);
+                });
+                myChart.data.datasets[0].data = [];
+                data.receiveAmounts.forEach(function (element) {
+                    var RecievedNumber = element.toString().match(/.{1,3}(?=(.{3})*$)/g);
+                    myChart.data.datasets[0].data.push(element);
+                });
+
+                myChart.data.datasets[1].data = [];
+                data.paymentAmounts.forEach(function (element) {
+                    var PaymentNumber = element.toString().match(/.{1,3}(?=(.{3})*$)/g);
+                    myChart.data.datasets[1].data.push(element);
+                });
+
+                //myChart.data.datasets.data = data.receiveAmounts;
+
+                //myChart.data.datasets[0].data.push(getRandomIntInclusive(1, 25));
+
+                // re-render the chart
+                myChart.update();
+            }
+        });
+    };
+
+</script>
+<script>
+    $("#box-Year").change(function () {
+        getBoxData($("#box-Year").val(), $("#ProjectId").val(), $("#box-Currency").val());
+    });
+
+    $("#ProjectId").change(function () {
+
+        var selectedProjects = [];
+        $("#ProjectId :selected").each(function () {
+            selectedProjects.push($(this).val() * 1);
+        });
+        console.log(selectedProjects);
+        getBoxData($("#box-Year").val(), selectedProjects, $("#box-Currency").val());
+    });
+
+    //$("#box-Currency").change(function () {
+    //    getBoxData($("#box-Year").val(), selectedProjects, $("#box-Currency").val());
+    //});
+
+    function getBoxData(year, projectId, currencyId) {
+        $.ajax({
+            traditional: true,
+            url: '/Home/GetProjectBoxDatas',
+            data: { "year": year, "projectId": projectId, "currencyId": currencyId },
+            success: function (data) {
+                $("#projectReceiveAmounts").html(data.projectReceiveAmounts);
+                $("#projectPaymentAmounts").html(data.projectPaymentAmounts);
+                $("#balanceAmounts").html(data.balanceAmounts);
+
+            },
+            error: function (response) {
+                $("#projectReceiveAmounts").html("0");
+                $("#projectPaymentAmounts").html("0");
+                $("#balanceAmounts").html("0");
+            }
+        });
+    }
+
+
+</script>
+
+

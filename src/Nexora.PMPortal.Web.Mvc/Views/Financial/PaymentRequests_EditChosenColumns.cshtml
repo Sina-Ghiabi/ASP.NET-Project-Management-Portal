@@ -1,0 +1,142 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ChosenColumnsViewModel
+
+@{
+    ViewBag.CurrentPageName = PageNames.PaymentRequests; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Select Columns
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("AddOrUpdateChosenColumns", "Financial", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(Model => Model.TableID, new { @id = "TableID" })
+                    <div class="modal-body">
+                        <div class="row" style="visibility:hidden">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column1, new { @class = "form-control", @id = "PaymentRequest" })
+                                <label for="PaymentRequest"> Requested Amount</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column2, new { @class = "form-control", @id = "Checkbox-Paid" })
+                                <label for="Checkbox-Paid"> Allocated</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column3, new { @class = "form-control", @id = "Checkbox-PaymentType" })
+                                <label for="Checkbox-PaymentType"> Payment Method</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column4, new { @class = "form-control", @id = "Checkbox-PaymentDescription" })
+                                <label for="Checkbox-PaymentDescription"> Payment Description</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column5, new { @class = "form-control", @id = "Checkbox-PaymentTo" })
+                                <label for="Checkbox-PaymentTo"> Payable To</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column6, new { @class = "form-control", @id = "Checkbox-PaymentRequestCode" })
+                                <label for="Checkbox-PaymentRequestCode"> Payment Request ID</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column7, new { @class = "form-control", @id = "Checkbox-ChequeDueDate" })
+                                <label for="Checkbox-ChequeDueDate"> Cheque Date</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column8, new { @class = "form-control", @id = "Checkbox-CurrencyType" })
+                                <label for="Checkbox-CurrencyType"> Currency</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column9, new { @class = "form-control", @id = "Checkbox-ScheduleRow" })
+                                <label for="Checkbox-ScheduleRow"> Schedule Row</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column10, new { @class = "form-control", @id = "Checkbox-FourthLevelCode" })
+                                <label for="Checkbox-FourthLevelCode"> Fourth Level Code</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column11, new { @class = "form-control", @id = "Checkbox-Description" })
+                                <label for="Checkbox-Description"> Description</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                @Html.CheckBoxFor(Model => Model.Column12, new { @class = "form-control", @id = "Checkbox-CreationDate" })
+                                <label for="Checkbox-CreationDate"> Registration Date</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Submit</button>
+                            <a href="@Url.Action("PaymentRequests", "Financial")" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#TableID").val(1);
+</script>
+
+

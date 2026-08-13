@@ -1,0 +1,117 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.PaymentRequestTransaction.PaymentRequestTransactionViewModel
+
+<div class="row">
+    <div class="col-md-6">
+
+        <input type="hidden" id="t_paymentid" name="t_paymentid" value="@Model.Id" />
+        <label for="">Amount</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control" id="t_amount" name="t_amount" data-inputmask="'alias': 'decimal', 'groupSeparator': ','" inputmode="numeric" required="required" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="">Description</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control" id="t_desc" name="t_desc" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="">Date</label>
+        <div class="form-group">
+            <div class="form-line">
+                <input type="text" class="form-control simple-datepicker" id="t_date" name="t_date" value="@Model.TodayDate" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <label for=""></label>
+        <div class="form-group">
+            <a href="javascript:;" id="add_payment_transaction" class="btn btn-success m-t-15 waves-effect pull-right">Record Payment</a>
+        </div>
+    </div>
+</div>
+
+<div class="k-rtl">
+    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.TransactionViewModel>().Name("PaymentTransactionGrid")
+                                                                                              .Columns(columns =>
+                                                                                              {
+                                                                                                  columns.Bound(c => c.Id).Title("#").Width(30);
+                                                                                                  columns.Bound(c => c.Amount).ClientTemplate("#=priceFormatter(data.Amount)#").Title("Amount").Width(140);
+                                                                                                  columns.Bound(c => c.CurrencyType).Title("Currency").Width(140);
+                                                                                                  columns.Bound(c => c.Description).Title("Description");
+                                                                                                  columns.Bound(c => c.CreationTime).Title("Date");
+                                                                                                  columns.Bound(c => c.ProjectName).Title("Project");
+                                                                                                  columns.Command(c => c.Custom("Edit").Click("onTransactionEdit")).Width(85);
+                                                                                                  columns.Command(c => { c.Destroy().Text("Delete"); }).Width(75);
+                                                                                              })
+                                                                                              .Navigatable()
+                                                                                              .Sortable()
+                                                                                              //.Filterable()
+                                                                                              .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .PageSize(300)
+                                                                                              .ServerOperation(false)
+                                                                                              .Model(model =>
+                                                                                              {
+                                                                                                  model.Id(p => p.Id);
+                                                                                              })
+                                                                                              .Events(events => events.RequestEnd("onRequestEnd"))
+                                                                                              .Read(read => read.Action("PaymentRequestTransactionRead", "Financial", new { id = Model.Id }))
+                                                                                              .Destroy(destroy => destroy.Action("PaymentRequestTransactionDestroy", "Financial"))
+                                                                                              )
+    )
+</div>
+
+<input type="hidden" id="currentRequestStatus" value="@Model.Status" />
+
+<script>
+    $("#add_payment_transaction").click(function () {
+        var amount_value = $("#t_amount").val();
+        var desc_value = $("#t_desc").val();
+        var date_value = $("#t_date").val();
+        var id_value = $("#t_paymentid").val() * 1;
+        if (amount_value) {
+            $.ajax({
+                type: 'post',
+                url: "/Financial/AddPaymentRequestTransaction",
+                data: { "amount": amount_value, "description": desc_value, "paymentRequestId": id_value, "date": date_value },
+                enctype: 'multipart/form-data',
+            }).done(function (result) {
+                if (result.status === "success") {
+                    $("#t_amount").val(null);
+                    $("#t_desc").val(null);
+                    $("#t_date").val(null);
+                    //$('#addProjectMediaForm').trigger("reset");
+                    $('#PaymentTransactionGrid').data('kendoGrid').dataSource.read();
+                    $('#PaymentTransactionGrid').data('kendoGrid').refresh();
+                    $('#PaymentRequestsGrid').data('kendoGrid').dataSource.read();
+                    $('#PaymentRequestsGrid').data('kendoGrid').refresh();
+
+                    if ($("#currentRequestStatus").val() * 1 == 2) {
+                         $('#addPaymentRequestModal').modal('hide');
+                    }
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+        else {
+            alert("Entering the approved amount for payment is required!");
+        }
+    });
+
+    $(document).ready(function () {
+        $(":input").inputmask();
+
+        $(".simple-datepicker").persianDatepicker({
+            initialValue: false,
+            format: 'YYYY/MM/DD',
+            autoClose: true
+        });
+    });
+
+</script>

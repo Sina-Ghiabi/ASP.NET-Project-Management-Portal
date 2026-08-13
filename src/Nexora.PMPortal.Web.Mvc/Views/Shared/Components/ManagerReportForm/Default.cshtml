@@ -1,0 +1,114 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.ManagerReportForm.ManagerReportFormViewModel
+
+<form id="addOrUpdateManagerReportForm" asp-action="UpdateManagerReport" asp-controller="ManagerReport" method="post" enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title" id="defaultModalLabel">Edit</h4>
+    </div>
+    <hr />
+    @Html.HiddenFor(model => model.FileUrl)
+    @Html.HiddenFor(model => model.Id)
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="">Related File</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        <input id="ReportInput" name="ReportInput" type="file" class="m-t-15" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">Start Date</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="">End Date</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control simple-datepicker", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <label for="">Description</label>
+                <div class="form-group">
+                    <div class="form-line">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control", placeholder = "", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success m-t-15 m-r-15 waves-effect pull-right">Save</button>
+        <a data-dismiss="modal" class="btn btn-warning m-t-15 waves-effect pull-right">Cancel</a>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $(".simple-datepicker").persianDatepicker({
+            initialValue: false,
+            format: 'YYYY/MM/DD',
+            autoClose: true
+        });
+    });
+
+    $("#addOrUpdateManagerReportForm").submit(function (e) {
+        e.preventDefault();
+        if ($(this).valid()) {
+            var formAction = $(this).attr("action");
+            var fdata = new FormData(this);
+            var fileInput = $('#ReportInput')[0];
+            var file = fileInput.files[0];
+            fdata.append("file", file);
+
+            $.ajax({
+                type: 'post',
+                url: formAction,
+                data: fdata,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false
+            }).done(function (result) {
+                if (result.status === "success") {
+                    $('#ManagerReportModal').modal('hide');
+                    $('#addOrUpdateManagerReportForm').trigger("reset");
+                    $('#ManagerReportGrid').data('kendoGrid').dataSource.read();
+                    $('#ManagerReportGrid').data('kendoGrid').refresh();
+                } else {
+                    alert(result.message);
+                }
+            });
+        }
+    });
+
+    $('#addOrUpdateManagerReportForm').validate({
+        rules: {
+            'StartDate': {
+                required: true
+            },
+            'EndDate': {
+                required: true
+            },
+        },
+        highlight: function (input) {
+            $(input).parents('.form-line').addClass('error');
+        },
+        unhighlight: function (input) {
+            $(input).parents('.form-line').removeClass('error');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parents('.form-group').append(error);
+        }
+    });
+
+</script>
+
+

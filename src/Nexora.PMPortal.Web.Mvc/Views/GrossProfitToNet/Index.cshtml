@@ -1,0 +1,97 @@
+﻿@using Nexora.PMPortal.Web.Startup
+
+@{
+    ViewBag.CurrentPageName = PageNames.GrossProfitToNet; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Gross-to-Net Profit Conversion
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="@Url.Action("Create","GrossProfitToNet")" class="btn btn-primary btn-create  pull-right">Add New Item</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body table-responsive">
+                <div class="k-rtl">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.ChartForm.GrossProfitToNetViewModel>()
+                                                                   .Name("Grid")
+                                                                   .Columns(columns =>
+                                                                   {
+                                                                       columns.Bound(c => c.Id).Filterable(false).Title("#").Width(40);
+                                                                       columns.Bound(c => c.Year).Title("Year").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(100);
+                                                                       columns.Bound(c => c.GrossProfit).Title("Gross Profit").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(140);
+                                                                       columns.Bound(c => c.SaleCost).Title("Selling & Administrative Expenses").ClientTemplate("#=priceFormatter(data.SaleCost)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+                                                                       columns.Bound(c => c.OperationalProfit).Title("Operating Profit").ClientTemplate("#=priceFormatter(data.OperationalProfit)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+                                                                       columns.Bound(c => c.NetProfit).Title("Net Profit").ClientTemplate("#=priceFormatter(data.NetProfit)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+
+                                                                       //columns.Command(c => c.Custom("Details").Click("onDetails").Visible("detailsPermission")).Width(75);
+                                                                       columns.Command(c => c.Custom("Edit").Click("onEdit")).Width(75);
+                                                                       columns.Command(c => { c.Destroy().Text("Delete"); }).Width(75);
+                                                                   })
+                                                                   .Pageable()
+                                                                   .Navigatable()
+                                                                   .Sortable()
+                                                                   .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                                                                   .Scrollable()
+                                                                   .Events(events => events.DataBound("onDataBound"))
+                                                                   .DataSource(dataSource => dataSource
+                                                                       .Ajax()
+                                                                       .PageSize(10)
+                                                                       .ServerOperation(true)
+                                                                       .Model(model =>
+                                                                       {
+                                                                           model.Id(p => p.Id);
+                                                                       })
+                                                                       .Read(read => read.Action("GrossProfitToNetRead", "GrossProfitToNet"))
+                                                                       .Destroy(destroy => destroy.Action("GrossProfitToNetDestroy", "GrossProfitToNet"))
+                                                                   )
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="LastPageId" value="@ViewBag.LastPageValue" />
+
+
+<script>
+    var pageSet = false;
+    function onDataBound(arg) {
+        if (!pageSet) {
+            $('#Grid').data().kendoGrid.dataSource.page($("#LastPageId").val());
+            pageSet = true;
+        }
+    }
+    function onEdit(e) {
+        var pageId = $("#Grid").data("kendoGrid").dataSource.page();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        window.location.href = "/GrossProfitToNet/Edit/" + dataItem.id + "?lastPage=" + pageId;
+    }
+
+    //function onDetails(e) {
+    //    var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+    //    window.location.href = "/GrossProfitToNet/Details/" + dataItem.id;
+    //}
+
+    //function detailsPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Details");
+    //}
+
+    //function editPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Edit");
+    //}
+
+    //function destroyPermission() {
+    //    return abp.auth.isGranted("PmPortal.Project.Delete");
+    //}
+</script>

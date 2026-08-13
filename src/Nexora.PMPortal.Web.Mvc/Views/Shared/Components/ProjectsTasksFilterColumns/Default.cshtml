@@ -1,0 +1,425 @@
+﻿@model Nexora.PMPortal.Web.Views.Shared.Components.ProjectsTasksFilterColumns.ProjectsTasksFilterColumnsViewModel
+
+@{
+    ViewBag.CurrentPageName = PageNames.ProjectsTasksFilterColumns; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2 style="display:inline">
+                            Select Filters
+                        </h2>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-2">
+                        <a href="javascript:;" id="Empty-Filter-Columns" class="btn btn-danger" style="display:inline; float:left; margin-left:35px">Clear Filter</a>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="dropdown">
+                            <input id="DropDownValue" type="hidden" value="1" />
+                            <button id="Filters-Dropdown" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="float: left ;min-width:170px; max-width: 170px">
+                                All Filters
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a id="Filter-All" href="#">All Filters</a></li>
+                                <li><a id="Filter-AllLastRevisions" href="#">All Latest Revisions Filter</a></li>
+                                <li><a id="Filter-Documents" href="#">Documents Filter</a></li>
+                                <li><a id="Filter-Revisions" href="#">Revisions Filter</a></li>
+                                @*<li><a id="Filter-LastRevisions" href="#">Latest Revisions Filter</a></li>*@
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                <div class="modal-body">
+                    <div class="row" style="visibility:hidden">
+                    </div>
+                    <div class="row" style="border-style:ridge; padding:10px">
+                        <div class="header" style="margin-bottom:15px">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h2>
+                                        Documents Filter
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.DropDownListFor(model => model.ProjectID, new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Project --", new { @Id = "Projects-Filter", @class = "form-control", required = "required", data_live_search = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.ProjectCode, new { @Id = "ProjectsCode-Filter", @class = "form-control", placeholder = "Project Code", required = "required" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.CompanyName, new { @Id = "CompanyName-Filter", @class = "form-control", placeholder = "Company Name", required = "required" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.DocumentTitle, new { @Id = "DocumentTitle-Filter", @class = "form-control", placeholder = "Document Title", required = "required" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.DocumentNumber, new { @Id = "DocumentNumber-Filter", @class = "form-control", placeholder = "Document Number", required = "required" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.DropDownListFor(model => model.Dicipline, Html.GetEnumSelectList(typeof(ProjectsTasksDiciplineTypes)), "--- Dicipline ---", new { @Id = "Dicipline-Filter", @class = "form-control", required = "required" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.ResponsiblePerson, new { @Id = "ResponsiblePerson-Filter", @class = "form-control", placeholder = "Responsible Person" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.DropDownListFor(model => model.DocumentType, Html.GetEnumSelectList(typeof(ProjectsTasksDocumentTypes)), "--- Document Type ---", new { @Id = "DocumentType-Filter", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.Description, new { @Id = "Description-Filter", @class = "form-control", placeholder = "Description" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.Progress, new { @Id = "Progress-Filter", @class = "form-control", placeholder = "Progress", data_inputmask = "'alias': 'decimal'", inputmode = "numeric" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.BaseLineStart, new { @Id = "BaseLineStart-Filter", @class = "form-control simple-datepicker", placeholder = "BaseLine Start", autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.BaseLineFinished, new { @Id = "BaseLineFinished-Filter", @class = "form-control simple-datepicker", placeholder = "BaseLine Finished", autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.OriginalDuration, new { @Id = "OriginalDuration-Filter", @class = "form-control", placeholder = "Original Duration", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.DropDownListFor(model => model.SourceOfItem, Html.GetEnumSelectList(typeof(ProjectsTasksSourceOfItemTypes)), "--- Source Of Item ---", new { @Id = "SourceOfItem-Filter", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        @Html.TextBoxFor(model => model.ManPower, new { @Id = "ManPower-Filter", @class = "form-control", placeholder = "Man Power", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="checkbox" id="Critical-Filter" value=" " onclick="myFunction()">
+                                <label for="Critical-Filter"> Critical</label>
+                                <div class="form-group">
+                                    <div class="form-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="border-style:ridge; padding:10px;">
+                            <div class="header" style="margin-bottom:15px">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h2>
+                                            Revisions Filter
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.TransmitalNumber, new { @Id = "TransmitalNumber-Filter", @class = "form-control", placeholder = "Transmital Number", required = "required" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.TransmitalDate, new { @Id = "TransmitalDate-Filter", @class = "form-control simple-datepicker", placeholder = "Transmital Date", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.StartTransmitalDate, new { @Id = "Start-TransmitalDate-Filter", @class = "form-control simple-datepicker", placeholder = "Start Transmital Date", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.EndTransmitalDate, new { @Id = "End-TransmitalDate-Filter", @class = "form-control simple-datepicker", placeholder = "End Transmital Date", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.RevisionNumber, new { @Id = "RevisionNumber-Filter", @class = "form-control", placeholder = "Revision Number" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.CommentSheetNumber, new { @Id = "CommentSheetNumber-Filter", @class = "form-control", placeholder = "Comment Sheet Number", required = "required" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.CommentSheetDate, new { @Id = "CommentSheetDate-Filter", @class = "form-control simple-datepicker", placeholder = "CommentSheetDate", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.ReplySheetNumber, new { @Id = "ReplySheetNumber-Filter", @class = "form-control", placeholder = "Reply Sheet Number", required = "required" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.TextBoxFor(model => model.ReplySheetDate, new { @Id = "ReplySheetDate-Filter", @class = "form-control simple-datepicker", placeholder = "Reply Sheet Date", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.DropDownListFor(model => model.Status, Html.GetEnumSelectList(typeof(ProjectsTasksStatusTypes)), "--- Status ---", new { @Id = "Status-Filter", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            @Html.DropDownListFor(model => model.Action, Html.GetEnumSelectList(typeof(ProjectsTasksActionTypes)), "--- Actions ---", new { @Id = "Action-Filter", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                       </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        $(document).ready(function () {
+
+    if ('@Html.Raw(ViewBag.SearchType)' != "") {
+
+        switch ('@Html.Raw(ViewBag.SearchType)') {
+            case "1":
+                $('#Filters-Dropdown').text("All Filters");
+                $('#DropDownValue').val(1);
+                break;
+            case "2":
+                $('#Filters-Dropdown').text("All Latest Revisions Filter");
+                $('#DropDownValue').val(2);
+                break;
+            case "3":
+                $('#Filters-Dropdown').text("Documents Filter");
+                $('#DropDownValue').val(3);
+                break;
+            case "4":
+                $('#Filters-Dropdown').text("Revisions Filter");
+                $('#DropDownValue').val(4);
+                break;
+            case "5":
+                $('#Filters-Dropdown').text("Latest Revisions Filter");
+                $('#DropDownValue').val(5);
+                break;
+        }
+    };
+
+        $(".simple-datepicker").persianDatepicker({
+            initialValue: false,
+            format: 'YYYY/MM/DD',
+            autoClose: true
+        });
+});
+    </script>
+
+<script>
+    function myFunction() {
+        var checkBox = document.getElementById("Critical-Filter");
+        if (checkBox.checked == true) {
+            $('#Critical-Filter').val(true);
+        } else {
+            $('#Critical-Filter').val(" ");
+        }
+    }
+</script>
+
+<script>
+    $('#Empty-Filter-Columns').click(function () {
+        $('#Projects-Filter').val(null);
+        $('#ProjectsCode-Filter').val(null);
+        $('#CompanyName-Filter').val(null);
+        $('#DocumentTitle-Filter').val(null);
+        $('#DocumentNumber-Filter').val(null);
+        $('#Dicipline-Filter').val(null);
+        $('#ResponsiblePerson-Filter').val(null);
+        $('#DocumentType-Filter').val(null);
+        $('#Description-Filter').val(null);
+        $('#Progress-Filter').val(null);
+        $('#BaseLineStart-Filter').val(null);
+        $('#BaseLineFinished-Filter').val(null);
+        $('#OriginalDuration-Filter').val(null);
+        $('#SourceOfItem-Filter').val(null);
+        $('#ManPower-Filter').val(null);
+        $('#Critical-Filter').prop('checked', false);
+        $('#TransmitalNumber-Filter').val(null);
+        $('#TransmitalDate-Filter').val(null);
+        $('#RevisionNumber-Filter').val(null);
+        $('#CommentSheetNumber-Filter').val(null);
+        $('#CommentSheetDate-Filter').val(null);
+        $('#ReplySheetNumber-Filter').val(null);
+        $('#ReplySheetDate-Filter').val(null);
+        $('#Status-Filter').val(null);
+        $('#Action-Filter').val(null);
+        $('#Start-TransmitalDate-Filter').val(null);
+        $('#End-TransmitalDate-Filter').val(null);
+
+        $.ajax({
+            type: "post",
+            url: "/ProjectsDocumentations/DeleteFilterColumns"
+        });
+    })
+</script>
+
+<script>
+    $('#Filter-All').click(function () {
+        $('#Filters-Dropdown').text("All Filters");
+
+        $('#Projects-Filter , #ProjectsCode-Filter , #CompanyName-Filter , #DocumentTitle-Filter , #DocumentNumber-Filter , #Dicipline-Filter , #ResponsiblePerson-Filter , #DocumentType-Filter , #Description-Filter , #Progress-Filter , #BaseLineStart-Filter , #BaseLineFinished-Filter , #OriginalDuration-Filter , #SourceOfItem-Filter , #ManPower-Filter , #Critical-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+        $('#TransmitalNumber-Filter , #TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+
+        $('#DropDownValue').val(1);
+    });
+
+    $('#Filter-AllLastRevisions').click(function () {
+        $('#Filters-Dropdown').text("All Latest Revisions Filter");
+
+        $('#Projects-Filter , #ProjectsCode-Filter , #CompanyName-Filter , #DocumentTitle-Filter , #DocumentNumber-Filter , #Dicipline-Filter , #ResponsiblePerson-Filter , #DocumentType-Filter , #Description-Filter , #Progress-Filter , #BaseLineStart-Filter , #BaseLineFinished-Filter , #OriginalDuration-Filter , #SourceOfItem-Filter , #ManPower-Filter , #Critical-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+        $('#TransmitalNumber-Filter , #TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+
+        $('#DropDownValue').val(2);
+    });
+
+    $('#Filter-Documents').click(function () {
+        $('#Filters-Dropdown').text("Documents Filter");
+
+        $("#Projects-Filter , #ProjectsCode-Filter , #CompanyName-Filter , #DocumentTitle-Filter , #DocumentNumber-Filter , #Dicipline-Filter , #ResponsiblePerson-Filter , #DocumentType-Filter , #Description-Filter , #Progress-Filter , #BaseLineStart-Filter , #BaseLineFinished-Filter , #OriginalDuration-Filter , #SourceOfItem-Filter , #ManPower-Filter , #Critical-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter").attr("disabled", false);
+        $('#TransmitalNumber-Filter , #TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", "disabled");
+
+        $('#DropDownValue').val(3);
+    });
+
+    $('#Filter-Revisions').click(function () {
+        $('#Filters-Dropdown').text("Revisions Filter");
+
+        $("#Projects-Filter , #ProjectsCode-Filter , #CompanyName-Filter , #DocumentTitle-Filter , #DocumentNumber-Filter , #Dicipline-Filter , #ResponsiblePerson-Filter , #DocumentType-Filter , #Description-Filter , #Progress-Filter , #BaseLineStart-Filter , #BaseLineFinished-Filter , #OriginalDuration-Filter , #SourceOfItem-Filter , #ManPower-Filter , #Critical-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter").attr("disabled", "disabled");
+        $('#TransmitalNumber-Filter , #TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+
+        $('#DropDownValue').val(4);
+    });
+
+    $('#Filter-LastRevisions').click(function () {
+        $('#Filters-Dropdown').text("Latest Revisions Filter");
+
+        $("#Projects-Filter , #ProjectsCode-Filter , #CompanyName-Filter , #DocumentTitle-Filter , #DocumentNumber-Filter , #Dicipline-Filter , #ResponsiblePerson-Filter , #DocumentType-Filter , #Description-Filter , #Progress-Filter , #BaseLineStart-Filter , #BaseLineFinished-Filter , #OriginalDuration-Filter , #SourceOfItem-Filter , #ManPower-Filter , #Critical-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter").attr("disabled", "disabled");
+        $('#TransmitalNumber-Filter , #TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter , #RevisionNumber-Filter , #CommentSheetNumber-Filter , #CommentSheetDate-Filter , #ReplySheetNumber-Filter , #ReplySheetDate-Filter , #Status-Filter , #Action-Filter').attr("disabled", false);
+
+        $('#DropDownValue').val(5);
+    });
+
+
+    window.setInterval(function () {
+
+        if ($('#DropDownValue').val() == 4 || $('#DropDownValue').val() == 5)
+        {
+            if ($('#TransmitalDate-Filter').val().length > 0) { $('#Start-TransmitalDate-Filter , #End-TransmitalDate-Filter').attr("disabled", "disabled"); $("#Start-TransmitalDate-Filter , #End-TransmitalDate-Filter").attr('title', 'Note: Transmittal date is only allowed in either the single-date or the date-range mode!'); }
+
+            else if ($('#Start-TransmitalDate-Filter').val().length > 0 || $('#End-TransmitalDate-Filter').val() > 0) { $('#TransmitalDate-Filter ').attr("disabled", "disabled"); $("#TransmitalDate-Filter").attr('title', 'Note: Transmittal date is only allowed in either the single-date or the date-range mode!'); }
+
+            if ($('#TransmitalDate-Filter').val().length == 0 && $('#Start-TransmitalDate-Filter').val().length == 0 && $('#End-TransmitalDate-Filter').val() == 0)
+            {
+                $('#TransmitalDate-Filter , #Start-TransmitalDate-Filter , #End-TransmitalDate-Filter').attr("disabled", false);
+            }
+        }
+    }, 100);
+
+
+</script>

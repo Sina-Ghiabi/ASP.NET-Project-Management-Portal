@@ -1,0 +1,121 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ChartForm.CostBenefitViewModel
+@{
+    ViewData["Title"] = "Create";
+    ViewBag.CurrentPageName = PageNames.CostBenefit; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Add New Sales and Profit/Loss
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("Create", "CostBenefit", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Project</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", required = "required", data_live_search = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Year</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Year, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Period</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.CostBenefitPeriod, Html.GetEnumSelectList(typeof(CostBenefitPeriod)), "--- Select ---", new { @class = "form-control", required = "true" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Services</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.DropDownListFor(model => model.ServiceType, Html.GetEnumSelectList(typeof(CostBenefitServiceType)), "--- Select ---", new { @class = "form-control", required = "true" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Approved Sales</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.ApprovedSales, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Recycle Sales</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.RecycleSales, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Operational Sales</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.AllCost, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Inflation Rate</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.InflationRate, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Cumulative Gross Profit Percentage</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.GrossProfit, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <a href="@Url.Action("Index", "CostBenefit")" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

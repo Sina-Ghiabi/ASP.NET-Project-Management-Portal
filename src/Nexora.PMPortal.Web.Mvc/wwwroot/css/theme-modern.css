@@ -1,0 +1,84 @@
+/* PM Portal modern palette: deep slate navbar/sidebar + teal accent.
+   Loaded after style.css / style-rtl.css / themes/all-themes.css to override
+   the legacy Material 2014 defaults without touching every rule in those files. */
+
+body {
+  background-color: #F1F5F9 !important;
+}
+
+/* Sidebar shell */
+.sidebar {
+  background-color: #0F172A !important;
+}
+
+.sidebar .menu .list .header {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
+}
+
+.sidebar .menu .list a,
+.sidebar .menu .list a span,
+.sidebar .menu .list a i.material-icons {
+  color: #fff !important;
+}
+
+.sidebar .menu .list a:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.sidebar .menu .list li.active > :first-child {
+  border-radius: 4px;
+}
+
+.sidebar .legal {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.sidebar .legal .copyright,
+.sidebar .legal .version,
+.sidebar .legal .copyright a {
+  color: #fff !important;
+}
+
+/* Primary actions */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+  background-color: #0D9488 !important;
+}
+
+.bg-teal {
+  background-color: #0D9488 !important;
+}
+
+/* Navbar brand/logo: style-rtl.css and bootstrap-rtl.min.css float the
+   header and brand to the right to match RTL text direction, but the
+   sidebar now lives on the left, so the logo needs to follow it there. */
+.navbar-header {
+  float: left !important;
+}
+
+.navbar-brand {
+  float: left !important;
+}
+
+.navbar > .container .navbar-brand,
+.navbar > .container-fluid .navbar-brand {
+  margin-left: 15px !important;
+  margin-right: auto !important;
+}
+
+/* Login page */
+.login-page {
+  background-color: #0F172A !important;
+}
+
+.login-page .login-box .logo a,
+.login-page .login-box .logo small {
+  color: #fff !important;
+}
+
+.login-page .login-box a {
+  color: #2DD4BF !important;
+}

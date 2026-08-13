@@ -1,0 +1,112 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ChartForm.GrossProfitToNetViewModel
+@{
+    ViewData["Title"] = "Edit";
+    ViewBag.CurrentPageName = PageNames.GrossProfitToNet; // The menu item will be active for this page.
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Edit Gross-to-Net Profit Conversion
+                        </h2>
+                    </div>
+                    <div class="col-md-8">
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+
+                @using (Html.BeginForm("Edit", "GrossProfitToNet", FormMethod.Post, new { @class = "", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.LastGridPage)
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Year</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.Year, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Gross Profit</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.GrossProfit, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Selling, General &amp; Administrative Expenses</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.SaleCost, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Operating Income / Expenses</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.OperationalCost, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Operating Profit</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.OperationalProfit, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Financial Expenses</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.FinancialCost, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="">Non-Operating Income / Expenses</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.NonOperationalCost, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Income Tax</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.IncomeTax, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="">Net Profit</label>
+                            <div class="form-group">
+                                <div class="form-line">
+                                    @Html.TextBoxFor(model => model.NetProfit, new { @class = "form-control", placeholder = "", data_inputmask = "'alias': 'decimal', 'groupSeparator': ','", inputmode = "numeric", required = "required" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <br>
+                    <a href="@Url.Action("Index", "GrossProfitToNet",new {lastPage= Model.LastGridPage })" type="button" class="btn btn-warning m-t-15 waves-effect">Cancel</a>
+                    <button type="submit" class="btn btn-primary m-t-15 waves-effect pull-right">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

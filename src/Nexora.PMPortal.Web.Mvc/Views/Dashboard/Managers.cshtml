@@ -1,0 +1,1678 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+            @if (IsGranted("PmPortal.Dashboard.Projects"))
+            {
+                <a href="@Url.Action("Index","Home")" class="btn bg-blue-grey waves-effect no-radius" role="button">Projects Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Allocation"))
+            {
+                <a href="@Url.Action("Allocation","Home")" class="btn bg-indigo waves-effect no-radius" role="button">Allocation Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.Managers"))
+            {
+                <a href="@Url.Action("Managers","Dashboard")" class="btn bg-teal waves-effect no-radius dashboard-active" role="button">Management Dashboard</a>
+            }
+            @if (IsGranted("PmPortal.Dashboard.ProjectsDocumentations"))
+            {
+                <a href="@Url.Action("ProjectsDocumentations","Dashboard")" class="btn bg-primary waves-effect no-radius" role="button">Engineering Dashboard</a>
+            }
+        </div>
+    </div>
+</div>
+@if (IsGranted("PmPortal.Dashboard.Managers"))
+{
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Management Dashboard (figures in million Rials)</h2>
+                    </div>
+                    <div class="col-md-1">
+                        <p class="pull-left p-t-5">Show from:</p>
+                    </div>
+                    <div class="col-md-2">
+                        @Html.DropDownListFor(model => model.DefaultYear, Html.GetEnumSelectList(typeof(SelectiveYear)), "--- Select ---", new { @class = "form-control", required = "required" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Company Sales by Approved and Recycled Sales</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="forooshByType"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Company Sales by Business Sector</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="forooshByServiceType"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Annual Sales Growth Percentage Compared to Year 1393</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="roshdForoosh"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Sales Growth Percentage vs. Previous Year and Inflation Rate</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="roshdForooshWithLastYear"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Gross Profit Margin</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="hashieSoodNakhales"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Net Profit Margin</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="hashieSoodkhales"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Company Workforce Status</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="hrYearly"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="p-t-5">Guarantees Held by the Employer</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="zemanatname"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card">
+        <div class="header">
+            <div class="row">
+                <div class="col-md-9">
+                    <h2 class="p-t-5">Each Employee's Share of Company Sales</h2>
+                </div>
+            </div>
+        </div>
+        <div class="body">
+            <div class="chart-container" style="position: relative; height:auto;">
+                <canvas id="HrBySales"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forooshByTypeYearlyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="forooshByTypeYearlyModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Each Project's Share of the Company's Sales in Year <span id="forooshByTypeYearly_Title"></span></p>
+                <div style="padding: 0 110px;">
+                    <div class="chart-container" style="position: relative; height:auto; width:600px;">
+                        <canvas id="forooshByTypeYearly"></canvas>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forooshByServiceTypeProjectsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="forooshByServiceTypeProjectsModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="Box_WaterAndWasteWater" style="display:none;">
+                            <h4>Water and Wastewater</h4>
+                            <hr />
+                            <div id="Box_WaterAndWasteWater_Wrapper"></div>
+                        </div>
+                        <div id="Box_WaterSupply" class="m-t-40" style="display:none;">
+                            <h4>Water Supply and Distribution</h4>
+                            <hr />
+                            <div id="Box_WaterSupply_Wrapper"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="Box_ElectricityAndEnergy" style="display:none;">
+                            <h4>Power and Energy</h4>
+                            <hr />
+                            <div id="Box_ElectricityAndEnergy_Wrapper"></div>
+                        </div>
+                        <div id="Box_IndustrialDevelopment" class="m-t-40" style="display:none;">
+                            <h4>Industrial Development</h4>
+                            <hr />
+                            <div id="Box_IndustrialDevelopment_Wrapper"></div>
+                        </div>
+                        <div id="Box_Utilty" class="m-t-40" style="display:none;">
+                            <h4>Utility</h4>
+                            <hr />
+                            <div id="Box_Utilty_Wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hrMonthlyModal" tabindex="-1" role="dialog">
+    <input type="hidden" id="hrMonthlySelectedYear" value="0" />
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="hrMonthlyModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Company Workforce Count by Month in Year <span id="hrMonthly_Title"></span></p>
+                <div class="chart-container" style="position: relative; height:auto;">
+                    <canvas id="hrMonthly"></canvas>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hrMonthlyByProjectModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="hrMonthlyByProjectModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Each Project's Share of the Company's Workforce in Month <span id="hrMonthlyByProjectMonth_Title"></span> of Year <span id="hrMonthlyByProjectYear_Title"></span></p>
+                <div style="padding: 0 110px 57px;">
+                    <div class="chart-container" style="position: relative; width:700px; height:500px;">
+                        <canvas id="hrMonthlyByProject"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<script>
+
+    $(document).ready(function () {
+        getData($("#DefaultYear").val());
+    });
+
+    $("#DefaultYear").change(function () {
+        getData($("#DefaultYear").val());
+    });
+
+    function getData(year) {
+        loadforooshByType(year);
+        loadforooshByServiceType(year);
+        loadroshdForoosh(year);
+        loadroshdForooshWithLastYear(year);
+        loadhashieSoodNakhales(year);
+        loadhashieSoodkhales(year);
+        loadHrYearly(year);
+        loadHrBySales(year);
+        LoadZemanatNameChart(year);
+    }
+
+    //#region forooshByType
+
+    var ctx_forooshByType = document.getElementById('forooshByType');
+    var forooshByTypeChart = new Chart(ctx_forooshByType, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Total Sales",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(190, 15, 155)',
+                    type: 'line'
+
+                },
+                {
+                    label: 'Recycled Sales',
+                    data: [],
+                    backgroundColor: 'rgba(228, 200, 253)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Approved Sales',
+                    data: [],
+                    backgroundColor: 'rgba(188, 74, 255)',
+
+                    // Changes this dataset to become a line
+                    type: 'bar'
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            if (value.includes("annual")) {
+                                value = value.toString();
+                                value = value.split("annual");
+                                value = value.join('');
+                                return value;
+                            }
+                            else if(value.includes("month")){
+                                value = value.toString();
+                                value = value.split("month");
+                                value = value.join(' month ');
+                                return value;
+                            }
+                        }
+                    }
+                }],
+
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                var x_value = this.data.labels[e._index];
+                if (x_value.includes("month")) {
+                    x_value = x_value.split(/([0-9]+)/)[3];
+                } else {
+                    x_value = x_value.split(/([0-9]+)/)[1];
+                }
+                $("#forooshByTypeYearly_Title").html(x_value);
+                LoadforooshByTypeYearly(x_value);
+            }
+
+        }
+    });
+
+
+
+    var ctx_forooshByTypeYearly = document.getElementById('forooshByTypeYearly');
+    var forooshByTypeYearlyChart = new Chart(ctx_forooshByTypeYearly, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'x`',
+                    data: [],
+                    backgroundColor: [],
+                    type: 'pie'
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'right',
+                align: 'center',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label[tooltipItem.index] + " : %" + tooltipValue.toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            }
+        }
+
+    });
+
+
+    function LoadforooshByTypeYearly(year) {
+        $.ajax({
+            url: '/Dashboard/GetforooshByTypeYearlyChartData',
+            data: { "year": year },
+            success: function (data) {
+                forooshByTypeYearlyChart.data.labels = [];
+
+                data.projects.forEach(function (element) {
+                    forooshByTypeYearlyChart.data.labels.push(element);
+                });
+
+                forooshByTypeYearlyChart.data.datasets[0].label = [];
+
+                data.projects.forEach(function (element) {
+                    forooshByTypeYearlyChart.data.datasets[0].label.push(element);
+                });
+
+
+
+                forooshByTypeYearlyChart.data.datasets[0].data = [];
+                data.colors.forEach(function (element) {
+                    forooshByTypeYearlyChart.data.datasets[0].backgroundColor.push(element);
+                });
+
+                forooshByTypeYearlyChart.data.datasets[0].data = [];
+                data.yearlySales.forEach(function (element) {
+                    forooshByTypeYearlyChart.data.datasets[0].data.push(element);
+                });
+
+
+                forooshByTypeYearlyChart.update();
+            }
+        });
+
+        $('#forooshByTypeYearlyModal').modal('show');
+    }
+
+
+
+    function loadforooshByType(year) {
+        $.ajax({
+            url: '/Dashboard/GetforooshByTypeChartData',
+            data: { "year": year },
+            success: function (data) {
+                var Years = [];
+                var Months = "";
+                LastMonth = [];
+                forooshByTypeChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element)
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    Months = element;
+                    LastMonth.push(Months[0]);
+                });
+
+                for (var Index = 0; Index <= Years.length - 1; Index++) {
+                    forooshByTypeChart.data.labels.push(LastMonth[Index] + Years[Index]);
+                }
+
+                forooshByTypeChart.data.datasets[0].data = [];
+                data.totalSales.forEach(function (element) {
+                    forooshByTypeChart.data.datasets[0].data.push(element);
+                });
+
+                forooshByTypeChart.data.datasets[1].data = [];
+                data.recycleSales.forEach(function (element) {
+                    forooshByTypeChart.data.datasets[1].data.push(element);
+                });
+
+                forooshByTypeChart.data.datasets[2].data = [];
+                data.approvedSales.forEach(function (element) {
+                    forooshByTypeChart.data.datasets[2].data.push(element);
+                });
+
+                // re-render the chart
+                forooshByTypeChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region forooshByServiceType
+
+    var ctx_forooshByServiceType = document.getElementById('forooshByServiceType');
+    var forooshByServiceTypeChart = new Chart(ctx_forooshByServiceType, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Total Sales",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(190, 15, 155)',
+                    type: 'line'
+
+                },
+                {
+                    label: 'Water and Wastewater',
+                    data: [],
+                    backgroundColor: 'rgba(255, 228, 121)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Power and Energy',
+                    data: [],
+                    backgroundColor: 'rgba(206, 169, 251)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Utility',
+                    data: [],
+                    backgroundColor: 'rgba(90, 181, 207)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Water Supply and Distribution',
+                    data: [],
+                    backgroundColor: 'rgba(134, 255, 255)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Industrial Development',
+                    data: [],
+                    backgroundColor: 'rgba(255, 162, 76)',
+                    type: 'bar'
+                }
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            if (value.includes("annual")) {
+                                value = value.toString();
+                                value = value.split("annual");
+                                value = value.join('');
+                                return value;
+                            }
+                            else if (value.includes("month")) {
+                                value = value.toString();
+                                value = value.split("month");
+                                value = value.join(' month ');
+                                return value;
+                            }
+                        }
+                    }
+                }],
+
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                var x_value = this.data.labels[e._index];
+                if (x_value.includes("month")) {
+                    x_value = x_value.split(/([0-9]+)/)[3];
+                } else {
+                    x_value = x_value.split(/([0-9]+)/)[1];
+                }
+                //var y_value = this.data.datasets[0].data[e._index];
+                LoadforooshByTypeProjects(x_value);
+            }
+
+        }
+    });
+
+
+    function LoadforooshByTypeProjects(year) {
+        $.ajax({
+            url: '/Dashboard/GetforooshByTypeYearlyProjectsData',
+            data: { "year": year },
+            success: function (data) {
+                if (data.waterAndWasteWater) {
+                    $("#Box_WaterAndWasteWater").show();
+                    $("#Box_WaterAndWasteWater_Wrapper").html(data.waterAndWasteWater);
+                }
+                else {
+                    $("#Box_WaterAndWasteWater").hide();
+                    $("#Box_WaterAndWasteWater_Wrapper").html("");
+                }
+                if (data.waterSupply) {
+                    $("#Box_WaterSupply").show();
+                    $("#Box_WaterSupply_Wrapper").html(data.waterSupply);
+                }
+                else {
+                    $("#Box_WaterSupply").hide();
+                    $("#Box_WaterSupply_Wrapper").html("");
+                }
+                if (data.electricityAndEnergy) {
+                    $("#Box_ElectricityAndEnergy").show();
+                    $("#Box_ElectricityAndEnergy_Wrapper").html(data.electricityAndEnergy);
+                }
+                else {
+                    $("#Box_ElectricityAndEnergy").hide();
+                    $("#Box_ElectricityAndEnergy_Wrapper").html("");
+                }
+                if (data.industrialDevelopment) {
+                    $("#Box_IndustrialDevelopment").show();
+                    $("#Box_IndustrialDevelopment_Wrapper").html(data.industrialDevelopment);
+                }
+                else {
+                    $("#Box_IndustrialDevelopment").hide();
+                    $("#Box_IndustrialDevelopment_Wrapper").html("");
+                }
+                if (data.utilty) {
+                    $("#Box_Utilty").show();
+                    $("#Box_Utilty_Wrapper").html(data.utilty);
+                }
+                else {
+                    $("#Box_Utilty").hide();
+                    $("#Box_Utilty_Wrapper").html("");
+                }
+
+
+                $('#forooshByServiceTypeProjectsModal').modal('show');
+            }
+        });
+
+    }
+
+
+    function loadforooshByServiceType(year) {
+        $.ajax({
+            url: '/Dashboard/GetforooshByServiceTypeChartData',
+            data: { "year": year },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                forooshByServiceTypeChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                   Years.push(element);
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element.split(",").pop());
+                });
+
+                for (var Index=0; Index <= Years.length-1; Index++) {
+                    forooshByServiceTypeChart.data.labels.push(LastMonth[Index] + Years[Index]);
+                }
+
+                forooshByServiceTypeChart.data.datasets[0].data = [];
+                data.totalSales.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[0].data.push(element);
+                });
+
+                forooshByServiceTypeChart.data.datasets[1].data = [];
+                data.waterAndWasteWater.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[1].data.push(element);
+                });
+
+                forooshByServiceTypeChart.data.datasets[2].data = [];
+                data.electricityAndEnergy.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[2].data.push(element);
+                });
+
+                forooshByServiceTypeChart.data.datasets[3].data = [];
+                data.utilty.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[3].data.push(element);
+                });
+
+                forooshByServiceTypeChart.data.datasets[4].data = [];
+                data.waterSupply.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[4].data.push(element);
+                });
+
+                forooshByServiceTypeChart.data.datasets[5].data = [];
+                data.industrialDevelopment.forEach(function (element) {
+                    forooshByServiceTypeChart.data.datasets[5].data.push(element);
+                });
+
+                // re-render the chart
+                forooshByServiceTypeChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region roshdForoosh
+
+    var ctx_roshdForoosh = document.getElementById('roshdForoosh');
+
+    var roshdForooshChart = new Chart(ctx_roshdForoosh, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Sales Growth Percentage",
+                data: [],
+                borderColor: 'rgba(51, 102, 255)',
+                backgroundColor: 'rgba(0, 188, 212, 0.0)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            if (value.includes("annual")) {
+                                value = value.toString();
+                                value = value.split("annual");
+                                value = value.join('');
+                                return value;
+                            }
+                            else if (value.includes("month")) {
+                                value = value.toString();
+                                value = value.split("month");
+                                value = value.join(' month ');
+                                return value;
+                            }
+                        }
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    function loadroshdForoosh(year) {
+        $.ajax({
+            url: '/Dashboard/GetroshdForooshChartData',
+            data: { "year": year },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                roshdForooshChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element)
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element.split(",").pop())
+                });
+
+                for (var Index = 0; Index <= Years.length-1; Index++) {
+                    roshdForooshChart.data.labels.push(LastMonth[Index+1]+Years[Index]);
+                }
+
+                roshdForooshChart.data.datasets[0].data = [];
+                data.totalSales.forEach(function (element) {
+                    roshdForooshChart.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                roshdForooshChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region roshdForooshWithLastYear
+
+    var ctx_roshdForooshWithLastYear = document.getElementById('roshdForooshWithLastYear');
+
+    var roshdForooshWithLastYearChart = new Chart(ctx_roshdForooshWithLastYear, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Sales Growth vs. Previous Year",
+                    data: [],
+                    borderColor: 'rgba(51, 102, 255)',
+                    backgroundColor: 'rgba(0, 188, 212, 0.0)'
+                },
+                {
+                    label: "Inflation Rate",
+                    data: [],
+                    borderColor: 'rgba(255, 0, 0)',
+                    backgroundColor: 'rgba(0, 188, 212, 0.0)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            if (value.includes("annual")) {
+                                value = value.toString();
+                                value = value.split("annual");
+                                value = value.join('');
+                                return value;
+                            }
+                            else if (value.includes("month")) {
+                                value = value.toString();
+                                value = value.split("month");
+                                value = value.join(' month ');
+                                return value;
+                            }
+                        }
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    function loadroshdForooshWithLastYear(year) {
+        $.ajax({
+            url: '/Dashboard/GetroshdForooshWithLastYearChartData',
+            data: { "year": year },
+            success: function (data) {
+                var Years = [];
+                var LastMonth = [];
+                roshdForooshWithLastYearChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    Years.push(element);
+                });
+
+                data.lastmonth.forEach(function (element) {
+                    LastMonth.push(element.split(",").pop())
+                });
+
+                for (var Index = 0; Index <= Years.length-1; Index++) {
+                    roshdForooshWithLastYearChart.data.labels.push(LastMonth[Index] + Years[Index]);
+                }
+
+                roshdForooshWithLastYearChart.data.datasets[0].data = [];
+                data.totalSales.forEach(function (element) {
+                    roshdForooshWithLastYearChart.data.datasets[0].data.push(element);
+                });
+
+                roshdForooshWithLastYearChart.data.datasets[1].data = [];
+                data.tavarom.forEach(function (element) {
+                    roshdForooshWithLastYearChart.data.datasets[1].data.push(element);
+                });
+
+
+                // re-render the chart
+                roshdForooshWithLastYearChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region hashieSoodNakhales
+
+    var ctx_hashieSoodNakhales = document.getElementById('hashieSoodNakhales');
+
+    var hashieSoodNakhalesChart = new Chart(ctx_hashieSoodNakhales, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Gross Profit",
+                data: [],
+                borderColor: 'rgba(110, 226, 48)',
+                backgroundColor: 'rgba(0, 188, 212, 0.0)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: 30,
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    function loadhashieSoodNakhales(year) {
+        $.ajax({
+            url: '/Dashboard/GethashieSoodNakhalesChartData',
+            data: { "year": year },
+            success: function (data) {
+                hashieSoodNakhalesChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    hashieSoodNakhalesChart.data.labels.push(element);
+                });
+
+                hashieSoodNakhalesChart.data.datasets[0].data = [];
+                data.values.forEach(function (element) {
+                    hashieSoodNakhalesChart.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                hashieSoodNakhalesChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+    //#region hashieSoodkhales
+
+    var ctx_hashieSoodkhales = document.getElementById('hashieSoodkhales');
+
+    var hashieSoodkhalesChart = new Chart(ctx_hashieSoodkhales, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Net Profit",
+                data: [],
+                borderColor: 'rgba(110, 226, 48)',
+                backgroundColor: 'rgba(0, 188, 212, 0.0)'
+            }]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        suggestedMin: 0,
+                        suggestedMax: 30,
+                        userCallback: function (value, index, values) {
+                            value = value.toString() + "%";
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    function loadhashieSoodkhales(year) {
+        $.ajax({
+            url: '/Dashboard/GethashieSoodkhalesChartData',
+            data: { "year": year },
+            success: function (data) {
+                hashieSoodkhalesChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    hashieSoodkhalesChart.data.labels.push(element);
+                });
+
+                hashieSoodkhalesChart.data.datasets[0].data = [];
+                data.values.forEach(function (element) {
+                    hashieSoodkhalesChart.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                hashieSoodkhalesChart.update();
+            }
+        });
+    }
+
+    //#endregion
+
+
+    //#region hrYearly
+
+    var ctx_hrYearly = document.getElementById('hrYearly');
+    var hrYearlyChart = new Chart(ctx_hrYearly, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Total Organization Staff",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(0, 176, 80)',
+                    type: 'line'
+                },
+                {
+                    label: 'Head Office Staff',
+                    data: [],
+                    backgroundColor: 'rgba(106, 190, 232)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Project Staff',
+                    data: [],
+                    backgroundColor: 'rgba(255, 164, 255)',
+                    type: 'bar'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+
+                }],
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                var x_value = this.data.labels[e._index];
+                //var y_value = this.data.datasets[0].data[e._index];
+                $("#hrMonthly_Title").html(x_value);
+                $("#hrMonthlySelectedYear").val(x_value);
+                loadHrMonthly(x_value);
+            }
+
+        }
+    });
+
+
+    function loadHrYearly(year) {
+        $.ajax({
+            url: '/Dashboard/GetCompanyLaborInventoryChartDatas',
+            data: { "year": year },
+            success: function (data) {
+                hrYearlyChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    hrYearlyChart.data.labels.push(element);
+                });
+
+                hrYearlyChart.data.datasets[0].data = [];
+                data.totalEmployees.forEach(function (element) {
+                    hrYearlyChart.data.datasets[0].data.push(element);
+                });
+
+                hrYearlyChart.data.datasets[1].data = [];
+                data.centralOfficeEmployees.forEach(function (element) {
+                    hrYearlyChart.data.datasets[1].data.push(element);
+                });
+
+                hrYearlyChart.data.datasets[2].data = [];
+                data.projectEmployees.forEach(function (element) {
+                    hrYearlyChart.data.datasets[2].data.push(element);
+                });
+
+                // re-render the chart
+                hrYearlyChart.update();
+            }
+        });
+    }
+
+
+    //#endregion
+
+    //#region hrMonthly
+
+    var ctx_hrMonthly = document.getElementById('hrMonthly');
+    var hrMonthlyChart = new Chart(ctx_hrMonthly, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: "Total Organization Staff",
+                    data: [],
+                    backgroundColor: 'rgba(90, 198, 12, 0.0)',
+                    borderColor: 'rgba(0, 176, 80)',
+                    type: 'line'
+                },
+                {
+                    label: 'Head Office Staff',
+                    data: [],
+                    backgroundColor: 'rgba(106, 190, 232)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Project Staff',
+                    data: [],
+                    backgroundColor: 'rgba(255, 164, 255)',
+                    type: 'bar'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+
+                }],
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+            onClick: function (c, i) {
+                e = i[0];
+                var x_value = this.data.labels[e._index];
+
+                var month = e._index + 1;
+                var currentYear = $("#hrMonthlySelectedYear").val();
+
+                $("#hrMonthlyByProjectYear_Title").html(currentYear);
+                $("#hrMonthlyByProjectMonth_Title").html(x_value);
+
+
+                LoadhrMonthlyByProject(currentYear, month);
+            }
+        }
+    });
+
+
+    function loadHrMonthly(year) {
+        $.ajax({
+            url: '/Dashboard/GetCompanyLaborInventoryMonthlyChartDatas',
+            data: { "year": year },
+            success: function (data) {
+                hrMonthlyChart.data.labels = [];
+
+                data.months.forEach(function (element) {
+                    hrMonthlyChart.data.labels.push(element);
+                });
+
+                hrMonthlyChart.data.datasets[0].data = [];
+                data.totalEmployees.forEach(function (element) {
+                    hrMonthlyChart.data.datasets[0].data.push(element);
+                });
+
+                hrMonthlyChart.data.datasets[1].data = [];
+                data.centralOfficeEmployees.forEach(function (element) {
+                    hrMonthlyChart.data.datasets[1].data.push(element);
+                });
+
+                hrMonthlyChart.data.datasets[2].data = [];
+                data.projectEmployees.forEach(function (element) {
+                    hrMonthlyChart.data.datasets[2].data.push(element);
+                });
+
+                // re-render the chart
+                hrMonthlyChart.update();
+
+                $('#hrMonthlyModal').modal('show');
+            }
+        });
+    }
+
+
+
+
+    var ctx_hrMonthlyByProject = document.getElementById('hrMonthlyByProject');
+    var hrMonthlyByProjectChart = new Chart(ctx_hrMonthlyByProject, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'x`',
+                    data: [],
+                    backgroundColor: [],
+                    type: 'pie'
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'right',
+                align: 'center',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label[tooltipItem.index] + " : %" + tooltipValue.toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            }
+        }
+
+    });
+
+
+    function LoadhrMonthlyByProject(year, month) {
+        $.ajax({
+            url: '/Dashboard/GetHrMonthlyByProjectChartData',
+            data: { "year": year, "month": month },
+            success: function (data) {
+                hrMonthlyByProjectChart.data.labels = [];
+
+                data.projects.forEach(function (element) {
+                    hrMonthlyByProjectChart.data.labels.push(element);
+                });
+
+                hrMonthlyByProjectChart.data.datasets[0].label = [];
+
+                data.projects.forEach(function (element) {
+                    hrMonthlyByProjectChart.data.datasets[0].label.push(element);
+                });
+
+
+
+                hrMonthlyByProjectChart.data.datasets[0].data = [];
+                data.colors.forEach(function (element) {
+                    hrMonthlyByProjectChart.data.datasets[0].backgroundColor.push(element);
+                });
+
+                hrMonthlyByProjectChart.data.datasets[0].data = [];
+                data.monthlySales.forEach(function (element) {
+                    hrMonthlyByProjectChart.data.datasets[0].data.push(element);
+                });
+
+
+                hrMonthlyByProjectChart.update();
+            }
+        });
+
+        $('#hrMonthlyByProjectModal').modal('show');
+    }
+    //#endregion
+
+
+    //#region hrBySales
+
+    var ctx_hrBySales = document.getElementById('HrBySales');
+    ctx_hrBySales.height = 80;
+
+    var hrBySalesChart = new Chart(ctx_hrBySales, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Each Employee\'s Share of Sales (million Rials)',
+                    data: [],
+                    backgroundColor: 'rgba(255, 222, 71)',
+                    type: 'bar'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                xAxes: [{
+                    stacked: true,
+
+                }],
+                yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            }
+
+        }
+    });
+
+
+    function loadHrBySales(year) {
+        $.ajax({
+            url: '/Dashboard/GetCompanyLaborInventoryBySalesChartDatas',
+            data: { "year": year },
+            success: function (data) {
+                hrBySalesChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    hrBySalesChart.data.labels.push(element);
+                });
+
+                hrBySalesChart.data.datasets[0].data = [];
+                data.salesVolume.forEach(function (element) {
+                    hrBySalesChart.data.datasets[0].data.push(element);
+                });
+
+                // re-render the chart
+                hrBySalesChart.update();
+            }
+        });
+    }
+
+
+    //#endregion
+
+
+    //#region zemanatnameChart
+    var ctx_zemanatname = document.getElementById('zemanatname');
+    var zemanatnameChart = new Chart(ctx_zemanatname, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Performance Bond',
+                    data: [],
+                    backgroundColor: 'rgba(255, 209, 7)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Advance Payment',
+                    data: [],
+                    backgroundColor: 'rgba(162, 227, 92)',
+                    type: 'bar'
+                },
+                {
+                    label: 'Retention Deduction',
+                    data: [],
+                    backgroundColor: 'rgba(192,145,239)',
+                    type: 'bar'
+                },
+
+            ]
+        },
+        options: {
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                align: 'end',
+                labels: {
+                    fontFamily: 'Shabnam',
+                    fontColor: 'black'
+                }
+            },
+            tooltips: {
+                mode: 'label',
+                label: 'mylabel',
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        var tooltipValue = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return data.datasets[tooltipItem.datasetIndex].label + " : " + parseInt(tooltipValue).toLocaleString();
+                    },
+                },
+                titleFontFamily: "Shabnam",
+                bodyFontFamily: "Shabnam"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                        beginAtZero: true,
+                        userCallback: function (value, index, values) {
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    }
+                }]
+            },
+        }
+    });
+
+    function LoadZemanatNameChart(year) {
+        $.ajax({
+            url: '/Dashboard/GetCompanyWarrantyBalanceChartDatas',
+            data: { "yearId": year },
+            success: function (data) {
+                zemanatnameChart.data.labels = [];
+
+                data.years.forEach(function (element) {
+                    zemanatnameChart.data.labels.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[0].data = [];
+                data.ejrayeTahodat.forEach(function (element) {
+                    zemanatnameChart.data.datasets[0].data.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[1].data = [];
+                data.pishDaryaft.forEach(function (element) {
+                    zemanatnameChart.data.datasets[1].data.push(element);
+                });
+
+
+                zemanatnameChart.data.datasets[2].data = [];
+                data.vajhoZeman.forEach(function (element) {
+                    zemanatnameChart.data.datasets[2].data.push(element);
+                });
+
+                // re-render the chart
+                zemanatnameChart.update();
+            }
+        });
+    }
+    //#endregion
+
+</script>
+
+<style>
+    .card .header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+        color: #111;
+    }
+</style>
+

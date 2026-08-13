@@ -1,0 +1,381 @@
+﻿@{
+    ViewBag.CurrentPageName = PageNames.Transactions; // The menu item will be active for this page.
+}
+
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2>
+                            Transactions
+                        </h2>
+                    </div>
+                </div>
+
+            </div>
+            <div class="body">
+                <div class="row">
+                    <div class="col-md-3">
+                        @Html.DropDownList("ProjectId", new SelectList(ViewBag.ProjectId, "Id", "Title"), "-- Select Project --", new { @class = "form-control", data_live_search = "true", multiple = "true", data_title = "-- Select Project --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("CurrencyId", Html.GetEnumSelectList(typeof(CurrencyType)), "-- Select Currency --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Currency --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("TransactionTypeId", Html.GetEnumSelectList(typeof(TransactionType)), "-- Select Action --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Action --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("PaymentRequestTypeId", Html.GetEnumSelectList(typeof(PaymentRequestType)), "-- Select Classification --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Classification --" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownList("PaymentTypeId", Html.GetEnumSelectList(typeof(PaymentType)), "-- Select Method --", new { @class = "form-control", required = "required", multiple = "true", data_title = "-- Select Method --" })
+                    </div>
+                    <div class="col-md-3">
+                        <select id="SortType" class="form-control">
+                            <option value="">-- Sort --</option>
+                            <option value="1">Registration Date (Descending)</option>
+                            <option value="2">Registration Date (Ascending)</option>
+                            <option value="3">Amount (Descending)</option>
+                            <option value="4">Amount (Ascending)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control simple-datepicker" id="FromDate" placeholder="From Date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control simple-datepicker" id="ToDate" placeholder="To Date" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb0">
+                            <div class="form-line">
+                                <input type="text" class="form-control" id="PayTo" placeholder="Pay To" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" class="form-control" id="FourthLeveLCode" placeholder="Fourth Level Code" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" class="form-control" id="PaymentRequestCode" placeholder="Payment Request ID" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="form-line">
+                                <input type="text" class="form-control" id="PaymentDescription" placeholder="Activity Title" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="javascript:;" id="Filter" class="btn btn-primary">Apply Filter</a>
+                        <a href="javascript:;" id="Excel" class="btn btn-success">Export to Excel</a>
+                        <a href="javascript:;" id="Filter-Columns" class="btn btn-info">Select Columns</a>
+                    </div>
+                </div>
+                <div class="k-rtl table-responsive">
+                    @(Html.Kendo().Grid<Nexora.PMPortal.Web.ViewModels.TransactionViewModel>
+                        ()
+                        .Name("Grid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Id).Title("#").Width(50).Filterable(false);
+                            columns.Bound(c => c.ProjectName).Title("Project").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.CreationTime).Title("Registration Date").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                            columns.Bound(c => c.TransactionType).Title("Action").ClientTemplate("#=TextFormatter(data.TransactionType)#").Width(140);
+                            columns.Bound(c => c.Amount).Title("Amount").ClientTemplate("#=priceFormatter(data.Amount)#").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.CurrencyType).Title("Currency").Width(140).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(120);
+                            columns.Bound(c => c.PaymentRequest_Type).Title("Classification").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                            columns.Bound(c => c.PaymentRequest_PayTo).Title("Pay To").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains)));
+                            columns.Bound(c => c.PaymentRequest_FourthLevelCode).Hidden().Title("Fourth Level Code").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.PaymentRequest_PaymentRequestCode).Hidden().Title("Payment Request ID").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.PaymentRequest_PaymentDescription).Hidden().Title("Activity Title").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.Description).Hidden().Title("Description").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Bound(c => c.RefrenceId).Hidden().Title("Reference Document Number").Filterable(ftb => ftb.Cell(cell => cell.Operator("contains").SuggestionOperator(FilterType.Contains))).Width(180);
+                            columns.Command(c => c.Custom("M").Click("onDetails"));
+                        })
+                        .Pageable()
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(10)
+                        .ServerOperation(true)
+                        .Model(model =>
+                        {
+                            model.Id(p => p.Id);
+                        })
+                        .Read(read => read.Action("TransactionRead", "Financial").Data("additionalInfo"))
+                        )
+                    )
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-12 col-md-3 col-sm-6 col-xs-12">
+                        <table class="table table-bordered sub-total">
+                            <tr>
+                                <td width="500">Total:</td>
+                                <td id="ResultTotalAmount" class="text-left">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $("#Filter").click(function () {
+        $('#Grid').data('kendoGrid').dataSource.page(1);
+        $('#Grid').data('kendoGrid').refresh();
+
+
+        $.ajax({
+            type: "GET",
+            url: "/Financial/TransactionFilterResult",
+            traditional: true,
+            data: {
+                projectId: $("#ProjectId").val(),
+                currencyId: $("#CurrencyId").val(),
+                transactionType: $("#TransactionTypeId").val(),
+                paymentRequestType: $("#PaymentRequestTypeId").val(),
+                sortType: $("#SortType").val(),
+                from: $("#FromDate").val(),
+                to: $("#ToDate").val(),
+                payTo: $("#PayTo").val(),
+                fourthLeveLCode: $("#FourthLeveLCode").val(),
+                paymentRequestCode: $("#PaymentRequestCode").val(),
+                paymentDescription: $("#PaymentDescription").val(),
+                paymentTypeId: $("#PaymentTypeId").val()
+            },
+            success: function (response) {
+                $("#ResultTotalAmount").html(response);
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+
+    });
+
+    function additionalInfo() {
+        return {
+            projectId: $("#ProjectId").val(),
+            currencyId: $("#CurrencyId").val(),
+            transactionType: $("#TransactionTypeId").val(),
+            paymentRequestType: $("#PaymentRequestTypeId").val(),
+            sortType: $("#SortType").val(),
+            from: $("#FromDate").val(),
+            to: $("#ToDate").val(),
+            payTo: $("#PayTo").val(),
+            fourthLeveLCode: $("#FourthLeveLCode").val(),
+            paymentRequestCode: $("#PaymentRequestCode").val(),
+            paymentDescription: $("#PaymentDescription").val(),
+            PaymentTypeId: $("#PaymentTypeId").val()
+        };
+    }
+
+
+    $("#Excel").click(function () {
+        $('#Grid').data('kendoGrid').dataSource.page(1);
+        $('#Grid').data('kendoGrid').refresh();
+
+        var url =
+            "projectId=" + $("#ProjectId").val() +
+            "&currencyId=" + $("#CurrencyId").val() +
+            "&transactionType=" + $("#TransactionTypeId").val() +
+            "&paymentRequestType=" + $("#PaymentRequestTypeId").val() +
+            "&sortType=" + $("#SortType").val() +
+            "&from=" + $("#FromDate").val() +
+            "&to=" + $("#ToDate").val() +
+            "&payTo=" + $("#PayTo").val() +
+            "&fourthLeveLCode=" + $("#FourthLeveLCode").val() +
+            "&paymentRequestCode=" + $("#PaymentRequestCode").val() +
+            "&paymentDescription=" + $("#PaymentDescription").val() +
+            "&PaymentTypeId=" + $("#PaymentTypeId").val();
+        window.location = "/Financial/TransactionExcel?" + url;
+    });
+
+
+
+    function TextFormatter(value) {
+        var returnString = '';
+        if (value === 1) {
+            returnString = '<span class="badge bg-green">Allocation</span>';
+        }
+        else {
+            returnString = '<span class="badge bg-red">Payment</span>';
+        }
+
+        return returnString;
+    }
+
+    function onDetails(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $("#Details_PaymentRequest_FourthLevelCode").html(dataItem.PaymentRequest_FourthLevelCode);
+        $("#Details_PaymentRequest_PaymentRequestCode").html(dataItem.PaymentRequest_PaymentRequestCode);
+        $("#Details_PaymentRequest_PaymentDescription").html(dataItem.PaymentRequest_PaymentDescription);
+        $("#Details_PaymentRequest_Description").html(dataItem.PaymentRequest_Description);
+        $("#Details_RefrenceId").html(dataItem.RefrenceId);
+
+        $('#itemDetails').modal('show');
+    }
+
+</script>
+
+<style>
+    .k-grid td {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .mb0 {
+        margin-bottom: 0 !important;
+    }
+</style>
+
+<div class="modal fade" id="itemDetails" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <table class="table table-striped">
+                <tr>
+                    <td>Fourth Level Code</td>
+                    <td id="Details_PaymentRequest_FourthLevelCode"></td>
+                </tr>
+                <tr>
+                    <td>Payment Request ID</td>
+                    <td id="Details_PaymentRequest_PaymentRequestCode"></td>
+                </tr>
+                <tr>
+                    <td>Activity Title</td>
+                    <td id="Details_PaymentRequest_PaymentDescription"></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td id="Details_PaymentRequest_Description"></td>
+                </tr>
+                <tr>
+                    <td>Reference Document Number</td>
+                    <td id="Details_RefrenceId"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#Filter-Columns").click(function () {
+        window.location.href = "/Financial/Transactions_EditChosenColumns" + "?TableID=" + 3;
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        //Registration Date
+        if ('@Html.Raw(ViewBag.Column1)' == "True" ) {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(2)
+        } else if('@Html.Raw(ViewBag.Column1)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(2)
+        }
+        //Action
+        if ('@Html.Raw(ViewBag.Column2)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(3)
+        } else if('@Html.Raw(ViewBag.Column2)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(3)
+        }
+        //Amount
+        if ('@Html.Raw(ViewBag.Column3)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(4)
+        } else if('@Html.Raw(ViewBag.Column3)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(4)
+        }
+        //Currency
+        if ('@Html.Raw(ViewBag.Column4)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(5)
+        } else if('@Html.Raw(ViewBag.Column4)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(5)
+        }
+        //Classification
+        if ('@Html.Raw(ViewBag.Column5)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(6)
+        } else if('@Html.Raw(ViewBag.Column5)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(6)
+        }
+        //Pay To
+        if ('@Html.Raw(ViewBag.Column6)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(7)
+        } else if('@Html.Raw(ViewBag.Column6)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(7)
+        }
+        //Fourth Level Code
+        if ('@Html.Raw(ViewBag.Column7)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(8)
+        } else if('@Html.Raw(ViewBag.Column7)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(8)
+        }
+        //Payment Request ID
+        if ('@Html.Raw(ViewBag.Column8)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(9)
+        } else if('@Html.Raw(ViewBag.Column8)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(9)
+        }
+        //Activity Title
+        if ('@Html.Raw(ViewBag.Column9)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(10)
+        } else if('@Html.Raw(ViewBag.Column9)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(10)
+        }
+        //Description
+        if ('@Html.Raw(ViewBag.Column10)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(11)
+        } else if('@Html.Raw(ViewBag.Column10)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(11)
+        }
+        //Reference Document Number
+        if ('@Html.Raw(ViewBag.Column11)' == "True") {
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.showColumn(12)
+        } else if('@Html.Raw(ViewBag.Column11)' == "False"){
+            var Grid = $("#Grid").data("kendoGrid");
+            Grid.hideColumn(12)
+        }
+    });
+
+</script>

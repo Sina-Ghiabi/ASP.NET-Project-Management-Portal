@@ -1,0 +1,259 @@
+﻿@model Nexora.PMPortal.Web.ViewModels.ResourceAndUsageViewModel
+@{
+    ViewBag.CurrentPageName = PageNames.ResourceAndUsage; // The menu item will be active for this page.
+
+}
+@functions{
+    public string ToPersianAmount(decimal amount)
+    {
+        var input = string.Format("{0:#,###,###}", amount);
+        if (input == "")
+        {
+            return "۰";
+        }
+        return makePersian(input);
+    }
+
+    public string ToPersian(decimal amount)
+    {
+        return makePersian(amount.ToString());
+    }
+
+    public string makePersian(string input)
+    {
+        Dictionary<char, char>
+    LettersDictionary = new Dictionary<char, char>
+    {
+        ['0'] = '۰',
+        ['1'] = '۱',
+        ['2'] = '۲',
+        ['3'] = '۳',
+        ['4'] = '۴',
+        ['5'] = '۵',
+        ['6'] = '۶',
+        ['7'] = '۷',
+        ['8'] = '۸',
+        ['9'] = '۹'
+    };
+        foreach (var item in input)
+        {
+            if (item != ',' && item != '-')
+            {
+                input = input.Replace(item, LettersDictionary[item]);
+            }
+        }
+        return input;
+    }
+
+
+
+
+}
+
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>
+                            Resources and Usage
+                        </h2>
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.CurrencyType, Html.GetEnumSelectList(typeof(CurrencyType)), "--- Select Currency ---", new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.DropDownListFor(model => model.ReportYear, Html.GetEnumSelectList(typeof(ReportYear)), "--- Select Year ---", new { @class = "form-control" })
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="height-scrolling ">
+
+                <table class="table-report table-bordered freezHeaderAndTitle" style="width:100%;">
+                    <thead>
+                        <tr class="usage-reports-head">
+                            <th class="first-fix fill-height">Description</th>
+                            <th class="second-fix fill-height">Date</th>
+                            @foreach (var item in Model.Projects.OrderBy(a => a.UsageReportDisplayOrder))
+                            {
+                                <th class="@(item.ShowInUsageReport ? "" : "d-none")">@item.Title</th>
+                            }
+                            <th>Reserve</th>
+                            <th>Total</th>
+                        </tr>
+                        @foreach (var item in Model.CashReaminings)
+                        {
+                            <tr>
+
+                                <th class="first-fix text-black">Cash Balance</th>
+                                <th class="second-fix text-black">Year @ToPersian(item.Year)</th>
+                                @foreach (var colum in item.ProjectCashRemainings.OrderBy(a=>a.DisplayOrder))
+                                {
+                                    <td class="@(colum.ShowInTable ? "" : "d-none")">@ToPersianAmount(colum.YearTotalAmount)</td>
+                                }
+                                <td>@ToPersianAmount(Model.TotalSave)</td>
+                                <td>@ToPersianAmount(item.ProjectCashRemainings.Sum(n => n.YearTotalAmount) + Model.TotalSave)</td>
+                            </tr>
+                        }
+                        @foreach (var item in Model.ReceiveBills)
+                        {
+                            <tr>
+                                <th class="first-fix text-black">Contribution</th>
+                                <th class="second-fix text-black">Year @ToPersian(item.Year)</th>
+                                @foreach (var colum in item.ProjectBills.OrderBy(a=>a.DisplayOrder))
+                                {
+                                    <td class="@(colum.ShowInTable ? "" : "d-none")">@ToPersianAmount(colum.YearTotalAmount)</td>
+                                }
+                                <td>-</td>
+                                <td>@ToPersianAmount(item.ProjectBills.Sum(n => n.YearTotalAmount))</td>
+                            </tr>
+                        }
+
+                        @foreach (var item in Model.Payments)
+                        {
+                            <tr>
+                                <th class="first-fix text-black">Cost</th>
+                                <th class="second-fix text-black">Year @ToPersian(item.Year)</th>
+                                @foreach (var colum in item.ProjectPayments.OrderBy(a=>a.DisplayOrder))
+                                {
+                                    <td class="@(colum.ShowInTable ? "" : "d-none")">@ToPersianAmount(colum.YearTotalAmount)</td>
+                                }
+                                <td>-</td>
+                                <td>@ToPersianAmount(item.ProjectPayments.Sum(n => n.YearTotalAmount))</td>
+                            </tr>
+                        }
+
+                    </thead>
+                    <tbody class="scrolling-body">
+
+                        <tr>
+                            <th class="" colspan="@(Model.Projects.Count() + 4)"><br /></th>
+                        </tr>
+                        @foreach (var item in Model.Rows.OrderByDescending(a => a.DateTime))
+                        {
+                            <tr class="@item.TransactionType-head">
+                                <th class="first-fix">@(item.TransactionType == TransactionType.Receive ? "Allocation" : "Cost")</th>
+                                <th class="second-fix">@(new PersianDateTime(item.DateTime).ToShortDateString())</th>
+                                @foreach (var colum in item.ProjectUsages.OrderBy(a=>a.DisplayOrder))
+                                {
+                                    <td class="@(colum.ShowInTable ? "" : "d-none")">@ToPersianAmount(colum.TodayTotalAmount)</td>
+                                }
+                                <td>-</td>
+                                <td>@ToPersianAmount(item.ProjectUsages.Sum(n => n.TodayTotalAmount))</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#CurrencyType').on('change', function () {
+        GoFilter();
+    });
+
+    $('#ReportYear').on('change', function () {
+        GoFilter();
+    });
+
+    function GoFilter() {
+        var currency = $("#CurrencyType").val();
+        var year = $("#ReportYear").val();
+        window.location = "/Reports/ResourceAndUsage?currencyId=" + currency + "&yearId=" + year;
+    }
+
+
+    $(document).ready(function () {
+        $('tbody').scroll(function (e) {
+            $('thead').css("right", -$("tbody").scrollLeft());
+            $('thead th:nth-child(1)').css("right", $("tbody").scrollLeft());
+            $('tbody td:nth-child(1)').css("right", $("tbody").scrollLeft());
+        });
+    });
+
+</script>
+
+<style>
+    .d-none {
+        display: none;
+    }
+
+    .height-scrolling {
+        height: calc(100vh - 250px);
+        overflow-y: scroll;
+    }
+
+    .freezHeaderAndTitle {
+        border-collapse: collapse;
+        max-width: 100%;
+    }
+
+        .freezHeaderAndTitle thead tr th {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0px;
+            z-index: 100;
+            background: #fff;
+        }
+
+        .freezHeaderAndTitle thead tr:nth-child(2) th, .freezHeaderAndTitle thead tr:nth-child(2) td {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 120px;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .freezHeaderAndTitle thead tr:nth-child(3) th, .freezHeaderAndTitle thead tr:nth-child(3) td {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 180px;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .freezHeaderAndTitle thead tr:nth-child(4) th, .freezHeaderAndTitle thead tr:nth-child(4) td {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 220px;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .freezHeaderAndTitle tbody > tr > th:first-child, .freezHeaderAndTitle thead tr th:nth-child(1) {
+            position: -webkit-sticky;
+            position: sticky;
+            right: 0px;
+        }
+
+        .freezHeaderAndTitle thead tr th:nth-child(1), .freezHeaderAndTitle thead tr th:nth-child(2) {
+            z-index: 200;
+        }
+
+        .freezHeaderAndTitle tbody > tr .first-fix, .freezHeaderAndTitle tbody > tr .second-fix {
+            background: #fff;
+        }
+
+        .freezHeaderAndTitle tbody > tr > th:nth-child(2), .freezHeaderAndTitle thead tr th:nth-child(2) {
+            position: -webkit-sticky;
+            position: sticky;
+            right: 70px;
+        }
+
+    .table-bordered thead tr th {
+        border: 1px solid #eee !important;
+    }
+</style>
