@@ -1,4 +1,4 @@
-# PMPortal
+# Project Management Portal
 
 **A project & financial management portal for EPC / construction organizations**, built on ASP.NET Core and the ABP Framework.
 
