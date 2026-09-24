@@ -4,6 +4,11 @@
 
 PMPortal centralizes everything a project-driven engineering or construction company needs to track day to day: active projects, contractors, payment requests, receipts, progress percentages, cost/benefit reports, warranty balances, and document control — all behind role-based access control and multi-tenancy.
 
+> **Origin** — This system was developed as part of my role as **.NET Developer at
+> Pishronet**, delivering a personnel management portal for **MSVCO**, an oil/gas &
+> petrochemical client, supporting 200+ contractors. It was pushed to GitHub afterwards as
+> a public record of the work.
+
 ---
 
 ## Features
@@ -136,4 +141,4 @@ PMPortal/
 
 ## License
 
-This is a personal portfolio project. All rights reserved — feel free to browse the code for reference, but please don't redistribute or reuse it without permission.
+This system was built as client work at Pishronet and is published here as a record of that work. All rights reserved — feel free to browse the code for reference, but please don't redistribute or reuse it without permission.
